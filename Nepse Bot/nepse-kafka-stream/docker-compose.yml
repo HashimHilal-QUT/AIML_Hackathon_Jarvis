@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - nepse-network
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "nepse.market.HRL:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - nepse-network
+
+  producer:
+    build:
+      context: .
+      dockerfile: src/producer/Dockerfile
+    depends_on:
+      - kafka
+    networks:
+      - nepse-network
+
+  consumer:
+    build:
+      context: .
+      dockerfile: src/consumer/Dockerfile
+    depends_on:
+      - kafka
+      - producer
+    networks:
+      - nepse-network
+
+networks:
+  nepse-network:
+    driver: bridge
