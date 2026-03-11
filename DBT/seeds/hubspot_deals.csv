@@ -1,0 +1,11 @@
+deal_id,deal_name,amount_aud,stage,close_date,company_id,contact_id,owner,created_date,pipeline
+3001,TechCorp Enterprise License,125000,Closed Won,2024-03-15,2001,1001,John Sales,2024-01-20,Sales Pipeline
+3002,RetailPlus POS System,45000,Closed Won,2024-02-28,2002,1002,Jane Sales,2024-01-15,Sales Pipeline
+3003,FinanceHub Analytics Platform,89000,Closed Won,2024-04-10,2003,1003,John Sales,2024-02-05,Sales Pipeline
+3004,Healthcare EMR Upgrade,67000,Negotiation,2024-05-30,2004,1004,Jane Sales,2024-03-01,Sales Pipeline
+3005,Construction Project Management,34000,Qualified To Buy,2024-06-15,2005,1005,John Sales,2024-03-10,Sales Pipeline
+3006,Education LMS Platform,28000,Qualified To Buy,2024-07-01,2006,1006,Jane Sales,2024-04-05,Sales Pipeline
+3007,RetailPlus Expansion,55000,Proposal,2024-06-20,2002,1007,Jane Sales,2024-04-12,Sales Pipeline
+3008,TechCorp Support Renewal,15000,Closed Won,2024-01-30,2001,1008,John Sales,2023-12-20,Sales Pipeline
+3009,FinanceHub Integration,42000,Qualified To Buy,2024-07-10,2003,1009,John Sales,2024-04-18,Sales Pipeline
+3010,Healthcare Training Program,19000,Proposal,2024-06-05,2004,1010,Jane Sales,2024-05-01,Sales Pipeline

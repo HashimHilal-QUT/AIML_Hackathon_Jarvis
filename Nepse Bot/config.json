@@ -1,0 +1,10 @@
+{
+    "broker_number": "21",
+    "username": "2021026996",
+    "password": "alphaGamma1#",
+    "action": "buy",
+    "symbol": "OMPL",
+    "quantity": "10",
+    "base_price": "578.4",
+    "auto_confirm": false
+}

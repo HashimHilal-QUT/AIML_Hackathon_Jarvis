@@ -1,0 +1,17 @@
+name: "salesforce_data_warehouse"
+version: "1.0.0"
+config-version: 2
+
+vars:
+  salesforce:
+    schema: "salesforce"
+    database: "salesforce"
+    schema_prefix: "salesforce"
+    schema_suffix: "data_warehouse"
+    schema_name: "salesforce_data_warehouse"
+    schema_name_prefix: "salesforce_data_warehouse"
+    schema_name_suffix: "data_warehouse"
+
+profile: 'salesforce_data_warehouse'  
+model-paths: ["models"]
+seed-paths: ["seeds"]

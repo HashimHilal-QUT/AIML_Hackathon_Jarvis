@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# NEPSE Data Structure
+
+## Database Schema
+The stock data is stored in a structured format in the `stock_data` table with the following columns:
+
+- `id`: SERIAL PRIMARY KEY
+- `timestamp`: DOUBLE PRECISION (Unix timestamp)
+- `stock_symbol`: VARCHAR(20) (Stock symbol/ticker)
+- `last_price`: DECIMAL(10,2) (Last trading price)
+- `volume`: DECIMAL(20,2) (Trading volume)
+- `percent_change`: DECIMAL(10,2) (Price change percentage)
+- `high_price`: DECIMAL(10,2) (Day's high)
+- `low_price`: DECIMAL(10,2) (Day's low)
+- `open_price`: DECIMAL(10,2) (Opening price)
+- `quantity`: DECIMAL(20,2) (Trading quantity)
+
+## Data Source
+Data is fetched from Merolagani API endpoint:
+`https://merolagani.com/handlers/webrequesthandler.ashx?type=market_summary`
+
+## Data Flow
+1. Data is fetched every 5 seconds from the API
+2. Raw JSON is stored in Redis for real-time access
+3. Parsed data is stored in PostgreSQL for historical analysis
+4. Each stock's data is stored as a separate row with timestamp
+
+## API Endpoints
+- `/latest`: Get latest market data
+- `/history`: Get historical data with timestamp range
+- `/stream`: WebSocket endpoint for real-time data

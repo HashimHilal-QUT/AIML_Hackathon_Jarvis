@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    container_name: smsai_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT:-5000}
+    ports:
+      - "${PORT:-5000}:${PORT:-5000}"
+    volumes:
+      - ./conversations.db:/app/conversations.db
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: smsai_ngrok
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Enable this service only when the 'ngrok' profile is specified
+    profiles:
+      - ngrok
+    command: http --log=stdout ${PORT:-5000}
+    depends_on:
+      - app
+    ports:
+      - "4040:4040"

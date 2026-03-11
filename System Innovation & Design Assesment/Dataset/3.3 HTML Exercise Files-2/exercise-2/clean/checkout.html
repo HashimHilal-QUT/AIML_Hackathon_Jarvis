@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="My Travel App">
+    <title>Checkout</title>
+</head>
+<body>
+    <header>
+        <h1>XYZ Travel</h1>
+    </header>
+    <nav>
+        <a href="#" class="brand_color_set" style="margin:10px;">About Us</a>
+        <a href="index.html" class="brand_color_set" style="margin:10px;">Cities</a>
+        <a href="basket.html" class="brand_color_set" style="margin:10px;">Basket</a>
+        <input type="search" placeholder="Look for more cities" style="float:right;">
+    </nav>
+
+    <main>
+        <h2>Checkout</h2>
+        <p>Thank you for your interest. Please provide your details so that one of our awesome tour agents can contact you to finalise details and take your payment. Thank you!</p>
+
+        <form name="checkout">
+            <label for="first_name">Your First Name</label><br>
+            <input type="text" name="first_name"><br><br>
+            <!--- Add more fields here --->
+            <fieldset>
+                <legend>Are you interested in any extras?</legend>
+                <div>
+                  <input type="checkbox" id="flights" name="extra" value="flights" />
+                  <label for="flights">Flights?</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="car-hire" name="extra" value="car-hire" />
+                  <label for="car-hire">Car Hire?</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="hotels" name="extra" value="hotels" />
+                    <label for="car-hire">Hotel Bookings?</label>
+                </div>
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>What is your budget constraints?</legend>
+                <div>
+                  <input type="radio" id="strict" name="extra" value="strict" />
+                  <label for="strict">Restricted?</label>
+                </div>
+                <div>
+                  <input type="radio" id="unstricted" name="extra" value="unstricted" />
+                  <label for="unstricted">Unrestricted?</label>
+                </div>
+                <div>
+                    <input type="radio" id="unsure" name="extra" value="unsure" />
+                    <label for="unsure">Unsure?</label>
+                </div>
+            </fieldset>
+            <br>
+            <label for="contact-date">
+                What is the latest that we should contact you?
+            </label>
+            <br>
+            <input 
+                type="date"
+                id="contact-date"
+                name="contact-date"
+                value="2025-05-03"
+                max="2026-00-01" 
+            />
+            <br>
+            <!--- This button returns the homepage --->
+            <br>
+            <a href="index.html"><input type="button" value="Send to agent" class="btn"></a>
+        </form>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+contact_id,first_name,last_name,email,phone,company_name,lifecycle_stage,created_date,state,city
+1001,James,Smith,james.smith@techcorp.com.au,0412345678,TechCorp Australia,Marketing Qualified Lead,2024-01-15,NSW,Sydney
+1002,Sarah,Johnson,sarah.j@retailplus.com.au,0423456789,RetailPlus,Opportunity,2024-02-10,VIC,Melbourne
+1003,Michael,Brown,michael.brown@financehub.com.au,0434567890,FinanceHub,Customer,2023-11-20,QLD,Brisbane
+1004,Emma,Davis,emma.davis@healthcare.com.au,0445678901,Healthcare Solutions,Marketing Qualified Lead,2024-03-05,WA,Perth
+1005,David,Wilson,david.w@construction.com.au,0456789012,Aussie Construction,Opportunity,2024-01-28,SA,Adelaide
+1006,Olivia,Martinez,olivia.m@education.com.au,0467890123,Education First,Lead,2024-04-12,TAS,Hobart
+1007,Daniel,Taylor,daniel.t@retailplus.com.au,0478901234,RetailPlus,Marketing Qualified Lead,2024-02-22,VIC,Melbourne
+1008,Sophia,Anderson,sophia.a@techcorp.com.au,0489012345,TechCorp Australia,Customer,2023-12-15,NSW,Sydney
+1009,Matthew,Thomas,matthew.t@financehub.com.au,0490123456,FinanceHub,Opportunity,2024-03-18,QLD,Brisbane
+1010,Isabella,Jackson,isabella.j@healthcare.com.au,0401234567,Healthcare Solutions,Lead,2024-04-25,WA,Perth

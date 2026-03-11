@@ -1,0 +1,2 @@
+Timestamp,Event,LTP,Elapsed(ms)
+1747225062.608798,578.4,1.91

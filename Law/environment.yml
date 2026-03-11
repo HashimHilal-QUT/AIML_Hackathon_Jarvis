@@ -1,0 +1,17 @@
+name: constitution_rag
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - streamlit
+  - faiss-cpu
+  - pymupdf
+  - python-dotenv
+  - pip
+  - pip:
+    - langchain
+    - langchain-openai
+    - langchain-community
+    - openai
+    - tiktoken

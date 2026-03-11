@@ -1,0 +1,10 @@
+{
+    "tables": [
+      {
+        "source_table": "stg_elig_staging_DataSource4_MedScreningTracker_FitKit",
+        "target_table": "stg_elig_staging_DataSource4_MedScreningTracker_FitKit",
+        "source_processed_table": "Processed_MedScreningTracker_FitKit_Source"
+      }
+    ],
+    "procedure_name": "ProcessMedScreeningData"
+  }

@@ -1,0 +1,17 @@
+services:
+  autogenstudio:
+    image: python:3.11
+    container_name: autogenstudio_container_10
+    working_dir: /app
+    ports:
+      - "8081:8081"
+    volumes:
+      - type: bind
+        source: /
+        target: /host
+    command: >
+      sh -c "pip install --upgrade pip &&
+             pip install autogenstudio &&
+             autogenstudio ui --host 0.0.0.0"
+    stdin_open: true
+    tty: true

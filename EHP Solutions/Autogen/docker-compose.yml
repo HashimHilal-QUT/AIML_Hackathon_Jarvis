@@ -1,0 +1,17 @@
+services:
+  autogenstudio:
+    image: python:3.10-slim
+    container_name: autogenstudio_container
+    working_dir: /app
+    ports:
+      - "8082:8081"
+    environment:
+      - PATH=/home/app/.local/bin:${PATH}
+      - PYTHONPATH=/home/app/.local/bin:/app:${PYTHONPATH}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    command: >
+      bash -c "pip install --upgrade pip &&
+               pip install autogenstudio &&
+               autogenstudio ui --host 0.0.0.0 "
+    stdin_open: true
+    tty: true

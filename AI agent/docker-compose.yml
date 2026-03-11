@@ -1,0 +1,45 @@
+services:
+  redis:
+    image: redis:7-alpine
+    platform: linux/arm64
+    ports:
+      - "6379:6379"
+    networks:
+      - nepse-network
+
+  timescale:
+    image: timescale/timescaledb:latest-pg14
+    platform: linux/arm64
+    environment:
+      POSTGRES_DB: nepse
+      POSTGRES_USER: karol
+      POSTGRES_PASSWORD: Karol@123
+    ports:
+      - "5432:5432"
+    networks:
+      - nepse-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/arm64
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+      - REDIS_URL=redis://redis:6379
+      - PG_DSN=postgresql://karol:Karol@123@timescale/nepse
+    depends_on:
+      - redis
+      - timescale
+    networks:
+      - nepse-network
+    volumes:
+      - .:/app
+    command: python nepse_realtime.py
+
+networks:
+  nepse-network:
+    driver: bridge

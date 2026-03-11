@@ -1,0 +1,7 @@
+company_id,company_name,domain,industry,employee_count,annual_revenue_aud,city,state,country,created_date
+2001,TechCorp Australia,techcorp.com.au,Technology,150,5000000,Sydney,NSW,Australia,2023-10-01
+2002,RetailPlus,retailplus.com.au,Retail,80,2500000,Melbourne,VIC,Australia,2023-11-15
+2003,FinanceHub,financehub.com.au,Financial Services,200,8000000,Brisbane,QLD,Australia,2023-09-20
+2004,Healthcare Solutions,healthcare.com.au,Healthcare,120,4500000,Perth,WA,Australia,2023-12-05
+2005,Aussie Construction,construction.com.au,Construction,60,1800000,Adelaide,SA,Australia,2024-01-10
+2006,Education First,education.com.au,Education,40,1200000,Hobart,TAS,Australia,2024-02-20
