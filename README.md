@@ -2,6 +2,8 @@
 
 Welcome to the Jarvis project repository! This README is your single source of truth for getting set up, understanding the project structure, and working effectively as a team.
 
+![WhatsApp Image 2026-04-10 at 9 51 30 PM](https://github.com/user-attachments/assets/a7d546bb-7cb8-41b7-a20e-4f8d57dcb2cd)
+
 ---
 
 ## 📁 Project Structure
