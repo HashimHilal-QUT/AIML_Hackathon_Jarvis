@@ -25,7 +25,7 @@ This document explains how to mount the shared Azure File Share for our project 
 Code
 
 ```
-net use Z: \\smbclouddrive.file.core.windows.net\fs-a58a455239 /u:Azure\smbclouddrive <your-storage-account-key>
+net use Z: \\smbclouddrive.file.core.windows.net\fs-a58a455239 /u:Azure\smbclouddrive AlPX/0zAVPNXnRxCf7LdI4TYkfdxSN74Rzz0gMfn956+TBs6bliZW1xhL60JU5KiVvDrt+SJW+dZ+AStQ+hEZA==
 ```
 
 Replace:
@@ -66,7 +66,7 @@ smb://smbclouddrive.file.core.windows.net/fs-a58a455239
 
 - **Username:** `Azure\smbclouddrive`
     
-- **Password:** `<your-storage-account-key>`
+- **Password:** `AlPX/0zAVPNXnRxCf7LdI4TYkfdxSN74Rzz0gMfn956+TBs6bliZW1xhL60JU5KiVvDrt+SJW+dZ+AStQ+hEZA==`
     
 
 ### **5. After connecting**
