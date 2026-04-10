@@ -1,0 +1,29 @@
+name: Deploy via Password
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USER }}
+          password: ${{ secrets.VM_PASSWORD }}
+          port: 22
+          script_stop: true # This stops the script if any command fails
+          script: |
+            cd /home/jarvis/Project
+            git pull origin main
+            # Add your restart commands below, for example:
+            # npm install
+            # pm2 restart all
