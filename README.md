@@ -1,7 +1,4 @@
-# AIML_Hackathon_Jarvis
+# AIML_Hackathon_2026
 
-Token
-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
+## Team: Hey Jarvis!
 
-SSH jarvis@20.5.145.150
-PWD: Password123!
