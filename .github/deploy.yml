@@ -23,7 +23,5 @@ jobs:
           script_stop: true # This stops the script if any command fails
           script: |
             cd /home/jarvis/Project
-            git pull origin main
-            # Add your restart commands below, for example:
-            # npm install
-            # pm2 restart all
+            # This configures the remote to use your token for this specific pull
+            git pull https://${{ secrets.GH_PAT }}@github.com/HashimHilal-QUT/AIML_Hackathon_Jarvis.git main
