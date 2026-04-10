@@ -19,20 +19,9 @@ jobs:
           host: ${{ secrets.AZURE_VM_HOST }}
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          port: 22
+          debug: true
           script: |
             cd /home/jarvis/Project
             git pull origin main
-
-            echo "=== Deploying Backend ==="
-            cd backend
-            pip install -r requirements.txt --quiet
-            cd ..
-
-            echo "=== Deploying Frontend ==="
-            cd frontend
-            npm install --silent
-            npm run build --if-present
-            cd ..
-
-            echo "=== Done ==="
-            # sudo systemctl restart jarvis
+            echo "Deploy complete"
