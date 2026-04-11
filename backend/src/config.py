@@ -77,7 +77,7 @@ class Settings(BaseSettings):
     cb_failure_threshold: int = Field(default=3, alias="CB_FAILURE_THRESHOLD")
     cb_recovery_timeout_seconds: float = Field(default=60.0, alias="CB_RECOVERY_TIMEOUT_SECONDS")
     openai_realtime_model: str = Field(default="gpt-realtime", alias="OPENAI_REALTIME_MODEL")
-    openai_realtime_voice: str = Field(default="marin", alias="OPENAI_REALTIME_VOICE")
+    openai_realtime_voice: str = Field(default="alloy", alias="OPENAI_REALTIME_VOICE")
     openai_realtime_temperature: float = Field(default=0.6, alias="OPENAI_REALTIME_TEMPERATURE")
     openai_realtime_instructions: str = Field(
         default=(
