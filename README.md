@@ -49,13 +49,13 @@ AIML_Hackathon_Jarvis/
 
 Each team member owns one branch. **Never push directly to `main`.**
 
-| Branch | Owner | Purpose |
-|---|---|---|
-| `frontend` | Frontend Dev | UI components, pages, styling |
-| `backend` | Backend Dev | API routes, database, server logic |
-| `llmops` | LLM Engineer | Model pipelines, prompts, evaluations |
-| `wireframe` | Designer | Mockups, screen designs, assets |
-| `main` | Everyone (via PR) | Production — auto-deploys to Azure VM |
+| Branch      | Purpose                               |
+| ----------- | ------------------------------------- |
+| `frontend`  | UI components, pages, styling         |
+| `backend`   | API routes, database, server logic    |
+| `llmops`    | Model pipelines, prompts, evaluations |
+| `wireframe` | Mockups, screen designs, assets       |
+| `main`      | Production — auto-deploys via Actions |
 
 ---
 
