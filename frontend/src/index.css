@@ -1,1 +1,86 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #2d5c98;
+  --color-primary-dim: #1e508b;
+  --color-primary-container: #92bdff;
+  --color-primary-fixed: #92bdff;
+  --color-primary-fixed-dim: #84b0f1;
+  --color-on-primary: #eef2ff;
+  --color-on-primary-container: #00396d;
+  --color-on-primary-fixed: #002348;
+  --color-on-primary-fixed-variant: #04427c;
+  --color-secondary: #9b3f00;
+  --color-secondary-dim: #883700;
+  --color-secondary-container: #ffc5aa;
+  --color-secondary-fixed: #ffc5aa;
+  --color-secondary-fixed-dim: #ffb28c;
+  --color-on-secondary: #fff0ea;
+  --color-on-secondary-container: #7b3100;
+  --color-on-secondary-fixed: #5c2300;
+  --color-on-secondary-fixed-variant: #893700;
+  --color-tertiary: #176a21;
+  --color-tertiary-dim: #025d16;
+  --color-tertiary-container: #9df197;
+  --color-tertiary-fixed: #9df197;
+  --color-tertiary-fixed-dim: #90e28a;
+  --color-on-tertiary: #d1ffc8;
+  --color-on-tertiary-container: #005c15;
+  --color-on-tertiary-fixed: #00460e;
+  --color-on-tertiary-fixed-variant: #12661e;
+  --color-surface: #f6f6ff;
+  --color-surface-bright: #f6f6ff;
+  --color-surface-dim: #c5d4ff;
+  --color-surface-container: #e2e7ff;
+  --color-surface-container-low: #eef0ff;
+  --color-surface-container-high: #dae2ff;
+  --color-surface-container-highest: #d2dcff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-variant: #d2dcff;
+  --color-surface-tint: #2d5c98;
+  --color-on-surface: #1f2d51;
+  --color-on-surface-variant: #4c5b81;
+  --color-background: #f6f6ff;
+  --color-on-background: #1f2d51;
+  --color-outline: #68769e;
+  --color-outline-variant: #9eacd7;
+  --color-inverse-surface: #000c2b;
+  --color-inverse-on-surface: #8e9cc6;
+  --color-inverse-primary: #92bdff;
+  --color-error: #b31b25;
+  --color-error-dim: #9f0519;
+  --color-error-container: #fb5151;
+  --color-on-error: #ffefee;
+  --color-on-error-container: #570008;
+
+  --font-headline: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-headline);
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.cuisine-card:hover .cuisine-img {
+  transform: scale(1.05);
+}
