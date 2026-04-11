@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #020d1a; font-family: 'Courier New', monospace; overflow: hidden; }
+  canvas { display: block; }
+  #ui {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  #status {
+    color: #00c8ff; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    margin-top: 12px; opacity: 0.7; pointer-events: none;
+  }
+  #transcript {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    width: 80%; max-width: 500px; text-align: center;
+    color: #00c8ff; font-size: 13px; letter-spacing: 1px; line-height: 1.8;
+    opacity: 0; transition: opacity 0.4s;
+    pointer-events: none; min-height: 44px;
+  }
+  #controls {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 12px; pointer-events: all;
+  }
+  button {
+    background: transparent; border: 1px solid #00c8ff44; color: #00c8ff;
+    font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 2px;
+    padding: 6px 16px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+  }
+  button:hover { background: #00c8ff18; border-color: #00c8ff99; }
+  button.active { background: #00c8ff22; border-color: #00c8ff; box-shadow: 0 0 10px #00c8ff44; }
+  #hud-tl, #hud-tr, #hud-bl, #hud-br {
+    position: absolute; color: #00c8ff55; font-size: 9px; letter-spacing: 1.5px; line-height: 1.8;
+  }
+  #hud-tl { top: 16px; left: 20px; }
+  #hud-tr { top: 16px; right: 20px; text-align: right; }
+  #hud-bl { bottom: 70px; left: 20px; }
+  #hud-br { bottom: 70px; right: 20px; text-align: right; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div id="status">SYSTEM ONLINE</div>
+</div>
+<div id="transcript"></div>
+<div id="hud-tl">SYS.CORE: ACTIVE<br>NEURAL.NET: 99.2%<br>UPTIME: 00:00:00</div>
+<div id="hud-tr">MODE: PASSIVE<br>THREAT: NONE<br>SUIT: STANDBY</div>
+<div id="hud-bl">PWR: ████████ 94%<br>TEMP: 36.4°C</div>
+<div id="hud-br">STARK.TECH v7.3<br>AI.CORE: READY</div>
+<div id="controls">
+  <button id="btn-speak" class="active">SPEAK</button>
+  <button id="btn-analyze">ANALYZE</button>
+  <button id="btn-alert">ALERT</button>
+  <button id="btn-idle">IDLE</button>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, cx, cy, R;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  cx = W / 2; cy = H / 2;
+  R = Math.min(W, H) * 0.34;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// State
+let mode = 'speak';
+let t = 0;
+let speaking = true;
+let speechAmp = 0;
+let targetAmp = 0;
+let wavePhase = 0;
+let alertFlash = 0;
+let uptime = 0;
+
+const PHRASES = [
+  "Good evening, Mr. Stark.",
+  "All systems are operating at peak efficiency.",
+  "Shall I run diagnostics on the Mark VII?",
+  "Incoming transmission detected.",
+  "Power core at 94%. Repulsor arrays charged.",
+  "I've taken the liberty of analyzing the threat matrix.",
+  "Your 3 o'clock meeting has been rescheduled.",
+  "Thermal imaging shows no hostiles in the vicinity.",
+];
+
+let currentPhrase = '';
+let phraseTimer = 0;
+let phraseIndex = 0;
+let charIndex = 0;
+let typingActive = false;
+
+function startTyping(phrase) {
+  currentPhrase = phrase;
+  charIndex = 0;
+  typingActive = true;
+  document.getElementById('transcript').style.opacity = '1';
+  document.getElementById('transcript').textContent = '';
+}
+
+function typeNext() {
+  if (!typingActive) return;
+  if (charIndex < currentPhrase.length) {
+    document.getElementById('transcript').textContent = currentPhrase.slice(0, charIndex + 1) + '█';
+    charIndex++;
+  } else {
+    document.getElementById('transcript').textContent = currentPhrase;
+    typingActive = false;
+    setTimeout(() => {
+      document.getElementById('transcript').style.opacity = '0';
+    }, 2500);
+  }
+}
+
+// Bars for voice visualizer
+const BAR_COUNT = 32;
+let bars = new Array(BAR_COUNT).fill(0);
+let barTargets = new Array(BAR_COUNT).fill(0);
+
+function updateBars() {
+  for (let i = 0; i < BAR_COUNT; i++) {
+    if (speaking && mode === 'speak') {
+      const center = (i - BAR_COUNT / 2) / (BAR_COUNT / 2);
+      const env = Math.exp(-center * center * 2);
+      barTargets[i] = (0.1 + Math.random() * 0.9) * speechAmp * env;
+    } else if (mode === 'analyze') {
+      barTargets[i] = 0.05 + Math.sin(t * 2 + i * 0.4) * 0.04 + Math.random() * 0.05;
+    } else if (mode === 'alert') {
+      barTargets[i] = 0.5 + Math.random() * 0.5;
+    } else {
+      barTargets[i] = 0.02 + Math.abs(Math.sin(t * 0.5 + i * 0.2)) * 0.04;
+    }
+    bars[i] += (barTargets[i] - bars[i]) * 0.25;
+  }
+}
+
+// Color per mode
+function modeColor(alpha) {
+  if (mode === 'alert') return `rgba(255,80,60,${alpha})`;
+  if (mode === 'analyze') return `rgba(80,220,160,${alpha})`;
+  return `rgba(0,200,255,${alpha})`;
+}
+function goldColor(alpha) { return `rgba(245,166,35,${alpha})`; }
+
+// Main draw
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#020d1a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,200,255,0.06)';
+  ctx.lineWidth = 0.5;
+  const gs = 28;
+  for (let x = 0; x < W; x += gs) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += gs) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Ambient glow
+  const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.6);
+  grd.addColorStop(0, modeColor(0.07));
+  grd.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  // Alert flash overlay
+  if (mode === 'alert') {
+    ctx.fillStyle = `rgba(255,60,40,${0.04 + 0.04 * Math.sin(t * 8)})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  drawRings();
+  drawWaveform();
+  drawVoiceBars();
+  drawDataArcs();
+  drawCenter();
+}
+
+function drawRings() {
+  const spinSpeech = mode === 'speak' ? speechAmp * 0.3 : 0;
+
+  // Outer faint ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 1.18, 0, Math.PI * 2);
+  ctx.strokeStyle = modeColor(0.15);
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  // Tick ring — rotating
+  const tickCount = 72;
+  const tickR = R * 1.12;
+  const tr = t * 0.3 + spinSpeech;
+  for (let i = 0; i < tickCount; i++) {
+    const angle = (i / tickCount) * Math.PI * 2 + tr;
+    const major = i % 6 === 0;
+    const len = major ? 10 : 5;
+    const x1 = cx + Math.cos(angle) * tickR;
+    const y1 = cy + Math.sin(angle) * tickR;
+    const x2 = cx + Math.cos(angle) * (tickR + len);
+    const y2 = cy + Math.sin(angle) * (tickR + len);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = modeColor(major ? 0.7 : 0.3);
+    ctx.lineWidth = major ? 1.5 : 0.7;
+    ctx.stroke();
+  }
+
+  // Main outer band
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 1.06, 0, Math.PI * 2);
+  ctx.strokeStyle = modeColor(0.9);
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 0.97, 0, Math.PI * 2);
+  ctx.strokeStyle = modeColor(0.4);
+  ctx.lineWidth = 0.7;
+  ctx.stroke();
+
+  // Inner band — counter-rotate
+  const ir = -t * 0.5;
+  ctx.save();
+  ctx.translate(cx, cy); ctx.rotate(ir); ctx.translate(-cx, -cy);
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 0.82, 0, Math.PI * 2);
+  ctx.strokeStyle = modeColor(0.35);
+  ctx.lineWidth = 0.6;
+  ctx.setLineDash([6, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // Gold arc — speaking energy indicator
+  const goldAmt = 0.25 + speechAmp * 0.7;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 1.06, -Math.PI * 0.9, -Math.PI * 0.9 + Math.PI * 2 * goldAmt);
+  ctx.strokeStyle = goldColor(0.85 + speechAmp * 0.15);
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+
+  // Inner core ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 0.72, 0, Math.PI * 2);
+  ctx.strokeStyle = modeColor(0.6);
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Core dark fill
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * 0.71, 0, Math.PI * 2);
+  const cfill = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.71);
+  cfill.addColorStop(0, '#061828');
+  cfill.addColorStop(1, '#020d1a');
+  ctx.fillStyle = cfill;
+  ctx.fill();
+}
+
+function drawWaveform() {
+  if (!speaking && mode !== 'speak') return;
+  const wR = R * 0.6;
+  ctx.beginPath();
+  const pts = 200;
+  for (let i = 0; i <= pts; i++) {
+    const angle = (i / pts) * Math.PI * 2;
+    const freq1 = Math.sin(angle * 3 + wavePhase * 2.1) * 0.5;
+    const freq2 = Math.sin(angle * 5 - wavePhase * 1.3) * 0.3;
+    const freq3 = Math.sin(angle * 8 + wavePhase * 3.7) * 0.2;
+    const noise = (freq1 + freq2 + freq3) * speechAmp * wR * 0.18;
+    const r = wR + noise;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = modeColor(0.45 + speechAmp * 0.35);
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  // Second waveform layer
+  ctx.beginPath();
+  for (let i = 0; i <= pts; i++) {
+    const angle = (i / pts) * Math.PI * 2;
+    const f1 = Math.sin(angle * 4 - wavePhase * 1.8) * 0.4;
+    const f2 = Math.sin(angle * 7 + wavePhase * 2.9) * 0.3;
+    const f3 = Math.sin(angle * 2 - wavePhase * 0.8) * 0.3;
+    const noise = (f1 + f2 + f3) * speechAmp * wR * 0.12;
+    const r = wR * 0.88 + noise;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = modeColor(0.2 + speechAmp * 0.2);
+  ctx.lineWidth = 0.7;
+  ctx.stroke();
+}
+
+function drawVoiceBars() {
+  const barW = R * 0.018;
+  const barMaxH = R * 0.22;
+  const totalW = BAR_COUNT * (barW + 2);
+  const startX = cx - totalW / 2;
+  const barY = cy + R * 0.4;
+
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const bh = bars[i] * barMaxH;
+    const x = startX + i * (barW + 2);
+    const alpha = 0.4 + bars[i] * 0.6;
+    ctx.fillStyle = modeColor(alpha);
+    ctx.fillRect(x, barY - bh, barW, bh * 2);
+  }
+
+  // Voice bar label
+  ctx.fillStyle = modeColor(0.4);
+  ctx.font = '9px Courier New';
+  ctx.letterSpacing = '2px';
+  ctx.textAlign = 'center';
+  ctx.fillText('VOICE WAVEFORM', cx, barY + barMaxH + 18);
+}
+
+function drawDataArcs() {
+  const arcs = [
+    { r: R * 0.92, start: 0.05, end: 0.28, alpha: 0.4, w: 1.5 },
+    { r: R * 0.92, start: 0.35, end: 0.62, alpha: 0.3, w: 1 },
+    { r: R * 0.92, start: 0.70, end: 0.92, alpha: 0.35, w: 1 },
+  ];
+  arcs.forEach(a => {
+    const s = a.start * Math.PI * 2 - Math.PI / 2 + t * 0.2;
+    const e = a.end * Math.PI * 2 - Math.PI / 2 + t * 0.2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, a.r, s, e);
+    ctx.strokeStyle = modeColor(a.alpha);
+    ctx.lineWidth = a.w;
+    ctx.stroke();
+  });
+
+  // Cardinal connector lines
+  const connR = R * 0.72;
+  const connEnd = R * 0.78;
+  [[0, -1],[1, 0],[0, 1],[-1, 0]].forEach(([dx, dy]) => {
+    ctx.beginPath();
+    ctx.moveTo(cx + dx * connR, cy + dy * connR);
+    ctx.lineTo(cx + dx * connEnd, cy + dy * connEnd);
+    ctx.strokeStyle = modeColor(0.5);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // End cap
+    ctx.beginPath();
+    ctx.arc(cx + dx * connEnd, cy + dy * connEnd, 2, 0, Math.PI * 2);
+    ctx.fillStyle = modeColor(0.9);
+    ctx.fill();
+  });
+}
+
+function drawCenter() {
+  // JARVIS text
+  ctx.textAlign = 'center';
+
+  const pulse = 0.85 + speechAmp * 0.15 + Math.sin(t * 2) * 0.05;
+  ctx.globalAlpha = pulse;
+
+  ctx.font = `bold ${Math.floor(R * 0.155)}px Courier New`;
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = modeColor(1);
+  ctx.shadowBlur = 12 + speechAmp * 20;
+  ctx.fillText('J.A.R.V.I.S.', cx, cy + R * 0.06);
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+
+  // Lines above/below text
+  const lw = R * 0.55;
+  ctx.strokeStyle = modeColor(0.35);
+  ctx.lineWidth = 0.7;
+  ctx.beginPath(); ctx.moveTo(cx - lw, cy - R * 0.1); ctx.lineTo(cx + lw, cy - R * 0.1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - lw * 0.7, cy + R * 0.18); ctx.lineTo(cx + lw * 0.7, cy + R * 0.18); ctx.stroke();
+
+  // Sub labels
+  ctx.font = `${Math.floor(R * 0.065)}px Courier New`;
+  ctx.fillStyle = modeColor(0.55);
+  ctx.fillText('SYSTEM ONLINE', cx, cy - R * 0.17);
+  ctx.fillText('v7.3.2  //  STARK.TECH', cx, cy + R * 0.27);
+
+  // Mode indicator dot
+  const dotY = cy - R * 0.32;
+  ctx.beginPath();
+  ctx.arc(cx, dotY, 3 + speechAmp * 3, 0, Math.PI * 2);
+  ctx.fillStyle = modeColor(0.8 + Math.sin(t * 4) * 0.2);
+  ctx.fill();
+}
+
+// Animation loop
+let lastTyping = 0;
+let lastBar = 0;
+let lastUptime = 0;
+
+function loop(ts) {
+  requestAnimationFrame(loop);
+  t += 0.016;
+  wavePhase += 0.04 + speechAmp * 0.08;
+
+  // Speech amplitude animation
+  if (mode === 'speak') {
+    targetAmp = speaking ? 0.5 + Math.sin(t * 1.7) * 0.3 + Math.sin(t * 3.1) * 0.2 : 0;
+  } else if (mode === 'alert') {
+    targetAmp = 0.7 + Math.sin(t * 6) * 0.3;
+  } else if (mode === 'analyze') {
+    targetAmp = 0.2 + Math.sin(t * 1.2) * 0.1;
+  } else {
+    targetAmp = 0.04;
+  }
+  speechAmp += (targetAmp - speechAmp) * 0.08;
+
+  // Typing
+  if (ts - lastTyping > 60 && typingActive) { typeNext(); lastTyping = ts; }
+
+  // New phrase trigger
+  if (mode === 'speak' && speaking && ts - phraseTimer > 4500) {
+    phraseTimer = ts;
+    phraseIndex = (phraseIndex + Math.floor(Math.random() * 3) + 1) % PHRASES.length;
+    startTyping(PHRASES[phraseIndex]);
+  }
+
+  // Bars
+  if (ts - lastBar > 40) { updateBars(); lastBar = ts; }
+
+  // Uptime
+  if (ts - lastUptime > 1000) {
+    uptime++;
+    const hh = String(Math.floor(uptime / 3600)).padStart(2, '0');
+    const mm = String(Math.floor((uptime % 3600) / 60)).padStart(2, '0');
+    const ss = String(uptime % 60).padStart(2, '0');
+    document.getElementById('hud-tl').innerHTML =
+      `SYS.CORE: ACTIVE<br>NEURAL.NET: 99.2%<br>UPTIME: ${hh}:${mm}:${ss}`;
+    lastUptime = ts;
+  }
+
+  // Status label
+  const statusMap = {
+    speak: 'SPEAKING', analyze: 'ANALYZING', alert: 'ALERT DETECTED', idle: 'STANDBY'
+  };
+  document.getElementById('status').textContent = statusMap[mode] || 'ONLINE';
+  document.getElementById('hud-tr').innerHTML =
+    `MODE: ${mode.toUpperCase()}<br>THREAT: ${mode === 'alert' ? '⚠ DETECTED' : 'NONE'}<br>SUIT: STANDBY`;
+
+  draw();
+}
+
+// Button controls
+function setMode(m) {
+  mode = m;
+  speaking = m === 'speak' || m === 'alert';
+  document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + m).classList.add('active');
+
+  if (m === 'alert') {
+    startTyping('⚠ WARNING: Hostile contact detected. Initializing countermeasures.');
+    phraseTimer = 0;
+  } else if (m === 'analyze') {
+    startTyping('Analyzing structural integrity. Running threat assessment protocols...');
+    phraseTimer = 0;
+  } else if (m === 'idle') {
+    document.getElementById('transcript').style.opacity = '0';
+  } else if (m === 'speak') {
+    startTyping(PHRASES[0]);
+    phraseTimer = Date.now();
+  }
+}
+
+document.getElementById('btn-speak').addEventListener('click', () => setMode('speak'));
+document.getElementById('btn-analyze').addEventListener('click', () => setMode('analyze'));
+document.getElementById('btn-alert').addEventListener('click', () => setMode('alert'));
+document.getElementById('btn-idle').addEventListener('click', () => setMode('idle'));
+
+// Boot
+startTyping(PHRASES[0]);
+phraseTimer = 0;
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
