@@ -1,7 +1,7 @@
 
 # **Azure Files – Team Drive Mount Instructions (Windows & macOS)**
 
-This document explains how to mount the shared Azure File Share for our project so you can drag and drop files just like a local folder.
+This document explains how to mount the shared Azure File Share for our project so you can drag and drop files just like a local folder. Note that SMB port 445 is blocked in most Office / University Networks
 
 ## **📁 Storage Details**
 
@@ -28,11 +28,7 @@ Code
 net use Z: \\smbclouddrive.file.core.windows.net\fs-a58a455239 /u:Azure\smbclouddrive AlPX/0zAVPNXnRxCf7LdI4TYkfdxSN74Rzz0gMfn956+TBs6bliZW1xhL60JU5KiVvDrt+SJW+dZ+AStQ+hEZA==
 ```
 
-Replace:
-
-- `<your-storage-account-key>` with the actual key
-    
-- `Z:` with any drive letter you prefer
+Replace:  `Z:` with any drive letter you prefer
     
 
 ### **3. After running the command**
