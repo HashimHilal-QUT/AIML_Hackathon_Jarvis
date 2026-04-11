@@ -2,15 +2,17 @@
 JARVIS Calendar Parser
 ======================
 Converts calendar file formats (.ics, .csv, .xml) into LLM-friendly JSON.
-Exposes a FastAPI endpoint for file upload.
+Also supports fetching live Outlook calendars via ICS subscription URL
+(works with Microsoft 365 / university Outlook accounts).
 
 Supported formats:
   - .ics  : iCalendar (Google Calendar, Apple Calendar, Outlook)
   - .csv  : Google Calendar CSV export
   - .xml  : Outlook XML export
+  - URL   : Live Outlook ICS subscription URL (Option 1 — no export needed)
 
 Install dependencies:
-  pip install fastapi uvicorn icalendar python-multipart
+  pip install fastapi uvicorn icalendar python-multipart requests
 """
 
 import json
@@ -20,8 +22,10 @@ from io import StringIO
 from datetime import datetime, date
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from urllib.parse import urlparse
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+import requests as http_requests
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
 from icalendar import Calendar
 
@@ -318,6 +322,106 @@ async def upload_calendar(file: UploadFile = File(...)):
 @app.get("/calendar/health", summary="Health check")
 def health():
     return {"status": "ok", "service": "JARVIS Calendar Parser"}
+
+
+# ---------------------------------------------------------------------------
+# Outlook ICS URL Subscription (Option 1 — Live feed, no export needed)
+# ---------------------------------------------------------------------------
+
+ALLOWED_ICS_HOSTS = {
+    "outlook.live.com",
+    "outlook.office.com",
+    "outlook.office365.com",
+    "calendar.google.com",        # Google Calendar ICS URLs
+    "mytimetable.qut.edu.au",     # QUT student class timetable
+    "canvas.qut.edu.au",          # QUT Canvas assignment & event reminders
+}
+
+def validate_ics_url(url: str) -> str:
+    """Validate the URL is from a trusted calendar host and uses HTTPS."""
+    parsed = urlparse(url)
+    if parsed.scheme != "https":
+        raise HTTPException(
+            status_code=400,
+            detail="Only HTTPS ICS URLs are allowed for security."
+        )
+    if parsed.netloc not in ALLOWED_ICS_HOSTS:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Untrusted host '{parsed.netloc}'. "
+                f"Allowed hosts: {', '.join(sorted(ALLOWED_ICS_HOSTS))}"
+            )
+        )
+    return url
+
+
+def fetch_ics_from_url(ics_url: str) -> bytes:
+    """Fetch raw ICS content from a live Outlook/Google Calendar subscription URL."""
+    try:
+        response = http_requests.get(
+            ics_url,
+            timeout=15,
+            headers={
+                "User-Agent": "JARVIS-Calendar-Agent/1.0",
+                "Accept": "text/calendar, application/ics, */*",
+            }
+        )
+        response.raise_for_status()
+        return response.content
+    except http_requests.exceptions.Timeout:
+        raise HTTPException(status_code=504, detail="Request to calendar URL timed out.")
+    except http_requests.exceptions.ConnectionError:
+        raise HTTPException(status_code=502, detail="Could not connect to the calendar URL.")
+    except http_requests.exceptions.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"Calendar URL returned error: {str(e)}")
+
+
+@app.get(
+    "/calendar/outlook",
+    summary="Fetch live calendar via ICS subscription URL",
+    description=(
+        "Pass any supported ICS subscription URL as a query parameter. "
+        "JARVIS fetches it live and returns LLM-ready JSON — no file export needed.\n\n"
+        "**Supported Sources:**\n"
+        "- **Outlook** (Microsoft 365 / university email calendar)\n"
+        "- **QUT Timetable** (`mytimetable.qut.edu.au`) — class schedule\n"
+        "- **QUT Canvas** (`canvas.qut.edu.au`) — assignment due dates & events\n"
+        "- **Google Calendar** (`calendar.google.com`)\n\n"
+        "**How to get your QUT Timetable ICS URL:**\n"
+        "1. Go to mytimetable.qut.edu.au\n"
+        "2. Click the calendar subscription/export button\n"
+        "3. Copy the ICS link\n\n"
+        "**How to get your QUT Canvas ICS URL:**\n"
+        "1. Go to canvas.qut.edu.au → Calendar\n"
+        "2. Click 'Calendar Feed' at the bottom right\n"
+        "3. Copy the ICS link"
+    )
+)
+async def fetch_outlook_calendar(
+    ics_url: str = Query(
+        ...,
+        description="Your Outlook ICS subscription URL (must be HTTPS from outlook.live.com or outlook.office365.com)",
+        example="https://outlook.live.com/owa/calendar/00000000.../reachable/en-AU.ics"
+    )
+):
+    validate_ics_url(ics_url)
+    content = fetch_ics_from_url(ics_url)
+
+    # Extract a clean filename from the URL for the metadata envelope
+    filename = ics_url.split("/")[-1].split("?")[0] or "outlook_calendar.ics"
+    if not filename.endswith(".ics"):
+        filename = "outlook_calendar.ics"
+
+    try:
+        result = parse_ics(content, filename)
+        # Tag source as outlook in metadata
+        result["jarvis_calendar_data"]["metadata"]["source"] = "outlook_ics_url"
+        result["jarvis_calendar_data"]["metadata"]["ics_url"] = ics_url
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Failed to parse Outlook calendar: {str(e)}")
+
+    return JSONResponse(content=result)
 
 
 # ---------------------------------------------------------------------------
