@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meal Buddy - Personalized Preferences</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script type='text/javascript' nonce='ZZJ1grtFZsy6TFCw8wxM0w==' src='https://contribution.usercontent.google.com/ZWBdozBV0Q13RMBAsHx4Osr-N_fjK7vsEyh5V2Z4QwP_cQToMyKG93oOhhGzTBpM_b6us2Um3WBKU0oiiHVSBw-jqj1Zicf7qMN5WXB4QzSGg1EfnoV64tpgzHr122Qx9d6WUcz2zpZd8qjJKNJ7xgkgUvK7jHjcfHR4KFogVujfym0cdLOdWmsqrtMI4HCu_wc2HaUOEP5HJ4xL6CN1R6rZEYaZFqlsYl9nPiYBfDUZpOZFCvIOnEiIc36C42lQBI2pO-k10jIguvrYOFBGdMJM24S1StZ9kcrrWp1KSEYBZfYOkQpwRkl_e5hGlGfoXI8tpgKLaaugWSStcF_gHyHVSmHLDYGI5cXdd5v9jhaMczMgvkwLBSPJ8vUf09UTvdsMcVmLJadmCqdzc_0yfjENOkJAkIK0NnCngOkuec9l4A0MVJGle6m3enAWUJbyrxFY4F2DiCcALtK60tCANa0h4Xemc552OTXk-elXvuXWKMdLH3r0RoLorVEUUoguXa70_MHXtTf7ji598aIaE3MjvrSYc1P-HTZyg_ewoL9hB5Mnn3DUoE1mOLFTgcarmYOM0T2MJlvhvsAX_Yg6N5FN1KRkf0eCd7TD4c4oNHDT8PH1fmNEfTSTEFmbvTKQ3GpPBj3huF-e9IDcTC6k9OGUGs9Iqo44pLc57TvZtRkCWISgpuCVVToIcGUhUN8W_c4TUd2v-1-2J1Ovpom90yS9AGasQoWBwqsbatmpO699ucqbD1Fe4pvyDfP-b00xLsr7FlutBGGUbrubHYzJ6JPROSFq5fuxTuM7-7pA'></script><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f6f6ff",
+                        "surface-container": "#e2e7ff",
+                        "inverse-on-surface": "#8e9cc6",
+                        "on-tertiary-container": "#005c15",
+                        "inverse-surface": "#000c2b",
+                        "secondary-dim": "#883700",
+                        "background": "#f6f6ff",
+                        "outline-variant": "#9eacd7",
+                        "on-tertiary": "#d1ffc8",
+                        "secondary-fixed-dim": "#ffb28c",
+                        "on-tertiary-fixed-variant": "#12661e",
+                        "tertiary-container": "#9df197",
+                        "on-secondary-fixed": "#5c2300",
+                        "on-secondary-container": "#7b3100",
+                        "primary": "#2d5c98",
+                        "on-primary": "#eef2ff",
+                        "error-container": "#fb5151",
+                        "surface-container-highest": "#d2dcff",
+                        "tertiary-fixed-dim": "#90e28a",
+                        "on-primary-fixed": "#002348",
+                        "on-surface": "#1f2d51",
+                        "on-primary-fixed-variant": "#04427c",
+                        "secondary": "#9b3f00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#893700",
+                        "surface-variant": "#d2dcff",
+                        "tertiary": "#176a21",
+                        "surface-bright": "#f6f6ff",
+                        "tertiary-fixed": "#9df197",
+                        "primary-container": "#92bdff",
+                        "on-error-container": "#570008",
+                        "primary-fixed": "#92bdff",
+                        "on-background": "#1f2d51",
+                        "tertiary-dim": "#025d16",
+                        "surface-container-low": "#eef0ff",
+                        "error-dim": "#9f0519",
+                        "surface-container-high": "#dae2ff",
+                        "on-tertiary-fixed": "#00460e",
+                        "secondary-fixed": "#ffc5aa",
+                        "primary-fixed-dim": "#84b0f1",
+                        "on-secondary": "#fff0ea",
+                        "primary-dim": "#1e508b",
+                        "outline": "#68769e",
+                        "on-error": "#ffefee",
+                        "surface-dim": "#c5d4ff",
+                        "surface-tint": "#2d5c98",
+                        "on-primary-container": "#00396d",
+                        "on-surface-variant": "#4c5b81",
+                        "error": "#b31b25",
+                        "inverse-primary": "#92bdff",
+                        "secondary-container": "#ffc5aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Be Vietnam Pro"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .cuisine-card:hover .cuisine-img {
+            transform: scale(1.05);
+        }
+        .asymmetric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen">
+<!-- Top Navigation (Shell suppressed for onboarding/transactional flow as per instructions) -->
+<main class="max-w-4xl mx-auto px-6 pt-12 pb-24 md:pt-20">
+<!-- Header Section -->
+<header class="mb-12 text-center md:text-left">
+<span class="text-secondary font-bold tracking-widest uppercase text-xs mb-4 block">Step 2 of 4</span>
+<h1 class="font-headline font-extrabold text-4xl md:text-5xl text-on-surface mb-4 leading-tight">
+                Tell us what you <span class="text-secondary">crave</span>.
+            </h1>
+<p class="text-on-surface-variant text-lg max-w-xl">
+                Personalize your Meal Buddy experience. We'll use these to find your perfect culinary matches.
+            </p>
+</header>
+<form class="space-y-16">
+<!-- Cuisine Selection Section -->
+<section>
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline font-bold text-2xl">Cuisine Preferences</h2>
+<span class="text-primary font-semibold text-sm">Select multiple</span>
+</div>
+<div class="asymmetric-grid">
+<!-- Cuisine Card: Asian -->
+<label class="relative group cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="cuisine-card overflow-hidden rounded-lg bg-surface-container-low transition-all duration-300 peer-checked:ring-4 peer-checked:ring-secondary peer-checked:bg-white shadow-sm h-48 flex flex-col">
+<div class="h-32 w-full overflow-hidden">
+<img class="cuisine-img w-full h-full object-cover transition-transform duration-500" data-alt="vibrant bowl of fresh ramen with steaming broth, green onions, and soft boiled egg on a wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_-pre3P7aFJytrw-p9pXBlAtck2NSgXwRWC-rixDj0-Hl0vaaEwQ3cHNH3G9UBIbzU9HXTbYRL9kcbfgIOPZft8dVNx4kOwwhdbEg6jRSMwd47Ke8yk9Rucex2dxYTMzRq_741nXLT4dfUMZ-4eAimgIQzDiJ4-ee_BJv6P4b1ZlIwVQW8snvtkDi1w9MyQbsH4sF2k5EilChbvwgvNRk-AUbbF61hxWn4PJlpNcxOa0Q3BiYZ7NWdP5ahthFQQIUUUl1bMdmwo0"/>
+</div>
+<div class="p-3 flex items-center justify-between mt-auto">
+<span class="font-headline font-bold text-sm uppercase tracking-wide">Asian</span>
+<span class="material-symbols-outlined text-secondary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+</div>
+</div>
+</label>
+<!-- Cuisine Card: Western -->
+<label class="relative group cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="cuisine-card overflow-hidden rounded-lg bg-surface-container-low transition-all duration-300 peer-checked:ring-4 peer-checked:ring-secondary peer-checked:bg-white shadow-sm h-48 flex flex-col">
+<div class="h-32 w-full overflow-hidden">
+<img class="cuisine-img w-full h-full object-cover transition-transform duration-500" data-alt="premium gourmet cheeseburger with melting cheese and fresh lettuce on a rustic dark surface with moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLFJPYuqu4--2_dZkEIaVHhCNQ9bByKMkh3vNvZoMbDSIpj5eu-WvECdsoYfCbL7eh8fZ39Sd7kAF8eVsHzGgNe1Nv6d18hfEAqydILQyXfqXzGVrQAPoXNeMYMu3wyWFfiEQ-GzZ8tdbGHHFH0HfqEZTtRScMiNRTRtz67Qsa4o8LIAfeq1l71xcMbjm8OlTclc7pruGbm8rkqDJ68XT75GrC9azClQkvhYNilYfcfCJKXLHdYiSebrsIDluoOGf2ZsjJtDtK_t4"/>
+</div>
+<div class="p-3 flex items-center justify-between mt-auto">
+<span class="font-headline font-bold text-sm uppercase tracking-wide">Western</span>
+<span class="material-symbols-outlined text-secondary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+</div>
+</div>
+</label>
+<!-- Cuisine Card: Mediterranean -->
+<label class="relative group cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="cuisine-card overflow-hidden rounded-lg bg-surface-container-low transition-all duration-300 peer-checked:ring-4 peer-checked:ring-secondary peer-checked:bg-white shadow-sm h-48 flex flex-col">
+<div class="h-32 w-full overflow-hidden">
+<img class="cuisine-img w-full h-full object-cover transition-transform duration-500" data-alt="fresh greek salad with feta cheese olives and red onions in a white ceramic bowl with natural daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCy6JLhGXi59WghFbZyvdGS3g2lMWmrFN35QfNf4Sm83P56ZKd0aZRZXLriQzpDnnqIKXw-hLBkHz6TASN_fDj4oEPXu14xrNKS1HlzuQjb_ZeiDX9PvOS_QIfQxdBkoKK8CX2DwHHAOCFsrnSf0IuilrJLBCw6ZIrfbNMv-4jxV5awJ4tsaRcZGB0VMh6NIWG8Ct0GZC6uX0PBve1cfwp3mIuXqG8AW6nTkrpQLOCjn3qgFeWYN3cThSLmUucSAD3Xlt9yWGfFRsY"/>
+</div>
+<div class="p-3 flex items-center justify-between mt-auto">
+<span class="font-headline font-bold text-sm uppercase tracking-wide">Italian</span>
+<span class="material-symbols-outlined text-secondary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+</div>
+</div>
+</label>
+<!-- Cuisine Card: Indian -->
+<label class="relative group cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="cuisine-card overflow-hidden rounded-lg bg-surface-container-low transition-all duration-300 peer-checked:ring-4 peer-checked:ring-secondary peer-checked:bg-white shadow-sm h-48 flex flex-col">
+<div class="h-32 w-full overflow-hidden">
+<img class="cuisine-img w-full h-full object-cover transition-transform duration-500" data-alt="rich buttery chicken curry in a copper pot with fresh coriander garnish and warm vibrant colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6vzRTiTfl9UI_zbaqcAtZEfe2v5Gd3INUktIj_SY3mwqM-Jj-JnbURjoPOHFyfLAh3IBiRyZn_yWlUm6VmKSL5SRkQz4robBaW7_EUD50tTd16AJ7VnRpQdp2swj8gRgrcJVq-OqPodltJqv17lnIW-wedCkIVqrbgtKJkrHPhreRla3sHlYejlNnG4hn07UyGa7Whxs_LfnJVFiLD1cp0_NCpTP2VOpWE5axnQtiMGvjyKENzaDYhqBy_MOToQmPrcQ6M9glHhk"/>
+</div>
+<div class="p-3 flex items-center justify-between mt-auto">
+<span class="font-headline font-bold text-sm uppercase tracking-wide">Indian</span>
+<span class="material-symbols-outlined text-secondary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+</div>
+</div>
+</label>
+<!-- Cuisine Card: Healthy -->
+<label class="relative group cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="cuisine-card overflow-hidden rounded-lg bg-surface-container-low transition-all duration-300 peer-checked:ring-4 peer-checked:ring-secondary peer-checked:bg-white shadow-sm h-48 flex flex-col">
+<div class="h-32 w-full overflow-hidden">
+<img class="cuisine-img w-full h-full object-cover transition-transform duration-500" data-alt="bright colorful poke bowl with salmon avocado and edamame beans in a modern minimalist setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpZcIXDzN3vS8NW4e2cPeY_MpqiNM9lugKkXBoN_cRzh-KVj0_dqXdAo7oA0BQfx4b1NFbyTcE5xAdPjWbczDawNezaYzY52GZg3giGlKaAIWlJauScp0WxK7svKuaud2m7TqcTihd_NbyEU-VgLs3kjVtCI5hKQSTIvgI2cn4qe1mEEi48N7uNI5vsXFysv_ywVcI3CH-1QNQ5nnFwRwZkDApfsBKCCIrLlrXIqH7wTJ7sCmONoqbHiJ6L7MDeikwLnty7P8omaQ"/>
+</div>
+<div class="p-3 flex items-center justify-between mt-auto">
+<span class="font-headline font-bold text-sm uppercase tracking-wide">Healthy</span>
+<span class="material-symbols-outlined text-secondary opacity-0 peer-checked:opacity-100 transition-opacity">check_circle</span>
+</div>
+</div>
+</label>
+</div>
+</section>
+<!-- Budget & Requirements Section: Bento Layout -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Budget Card -->
+<div class="md:col-span-2 bg-surface-container-low rounded-lg p-8">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">payments</span>
+<h2 class="font-headline font-bold text-xl">Daily Budget Range</h2>
+</div>
+<div class="space-y-8">
+<div class="relative pt-4">
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" max="100" min="10" type="range" value="30"/>
+<div class="flex justify-between mt-4 text-sm font-semibold text-on-surface-variant">
+<span>$10</span>
+<span class="text-primary bg-primary-container/20 px-3 py-1 rounded-full">$30 - $45</span>
+<span>$100+</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<button class="py-3 px-4 rounded-lg bg-surface-container-lowest text-on-surface border-2 border-transparent hover:border-primary-container transition-all text-sm font-bold" type="button">$ (Budget)</button>
+<button class="py-3 px-4 rounded-lg bg-primary text-on-primary border-2 border-primary transition-all text-sm font-bold" type="button">$$ (Value)</button>
+<button class="py-3 px-4 rounded-lg bg-surface-container-lowest text-on-surface border-2 border-transparent hover:border-primary-container transition-all text-sm font-bold" type="button">$$$ (Premium)</button>
+</div>
+</div>
+</div>
+<!-- Dietary Highlights Card -->
+<!-- Dietary Requirements Grid -->
+<div class="md:col-span-3 bg-white rounded-lg p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-tertiary text-3xl">info</span>
+<h2 class="font-headline font-bold text-xl">Dietary Requirements &amp; Allergies</h2>
+</div>
+<div class="flex flex-wrap gap-3">
+<!-- Tertiary Fresh Chips -->
+<button class="bg-tertiary-container text-on-tertiary-container px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-tertiary-fixed transition-colors" type="button">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: &#39;FILL&#39; 1;">eco</span> Vegetarian
+                        </button>
+<button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="button">
+                            Vegan
+                        </button>
+<button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="button">
+                            Gluten-Free
+                        </button>
+<button class="bg-tertiary-container text-on-tertiary-container px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-tertiary-fixed transition-colors" type="button">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: &#39;FILL&#39; 1;">verified</span> Halal
+                        </button>
+<button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="button">
+                            Dairy-Free
+                        </button>
+<button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="button">
+                            Nut Allergy
+                        </button>
+<button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="button">
+                            Low Carb
+                        </button>
+<button class="bg-surface-container-low border-2 border-dashed border-outline-variant text-outline px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-white transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">add</span> Add Custom
+                        </button>
+</div>
+</div>
+</section>
+<!-- Bottom Action Bar (Fixed-style for mobile/scrolling) -->
+<footer class="mt-20 flex flex-col md:flex-row items-center justify-between gap-6">
+<button class="text-on-surface-variant font-bold hover:text-primary transition-colors flex items-center gap-2 order-2 md:order-1" type="button">
+<span class="material-symbols-outlined">arrow_back</span> Back
+                </button>
+<div class="flex items-center gap-4 w-full md:w-auto order-1 md:order-2">
+<button class="w-full md:w-64 bg-secondary text-on-secondary py-4 px-8 rounded-xl font-headline font-extrabold text-lg shadow-xl shadow-secondary/20 hover:bg-secondary-dim transition-all active:scale-95" type="submit">
+                        Finish Setup
+                    </button>
+</div>
+</footer>
+</form>
+</main>
+<!-- Success Feedback Overlay (Hidden by default) -->
+<div class="hidden fixed inset-0 bg-inverse-surface/40 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+<div class="bg-white rounded-lg p-10 max-w-md w-full text-center shadow-2xl">
+<div class="w-20 h-20 bg-tertiary-container rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-on-tertiary-container text-4xl" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+</div>
+<h2 class="font-headline font-extrabold text-2xl mb-4">Tastebuds Synced!</h2>
+<p class="text-on-surface-variant mb-8">We've updated your preferences. Get ready for some delicious matches.</p>
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-bold">Go to Discovery</button>
+</div>
+</div>
+</body></html>
