@@ -536,4 +536,4 @@ Items produced by the system:
 - Sleep timer
 
 ## 9. UI image
-![Bedtime Stories UI](./wireframe/screens/UIImage.png)
+![Bedtime Stories UI](./wireframe/screens/UIimage.png)
