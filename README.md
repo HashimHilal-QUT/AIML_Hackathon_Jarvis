@@ -188,7 +188,7 @@ docs: update README with setup instructions
 
 ---
 
-## 🆘 Common Issues
+## 🆘 Common Issues Solution
 
 **SSH permission denied when pushing?**
 ```bash
