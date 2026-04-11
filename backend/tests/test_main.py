@@ -21,4 +21,6 @@ def test_story_routes_exist() -> None:
     assert "/api/stories/audio" in routes
     assert "/api/voice/command" in routes
     assert "/api/voice/session/start" in routes
+    assert "/api/voice/realtime/session" in routes
+    assert "/api/voice/realtime/test-page" in routes
     assert "/api/feedback" in routes

@@ -1,0 +1,25 @@
+{
+  "provider": "openai",
+  "api": {
+    "type": "realtime",
+    "base_url": "https://api.openai.com/v1/realtime",
+    "auth_env_var": "OPENAI_API_KEY",
+    "client_secret_endpoint": "/v1/realtime/client_secrets",
+    "webrtc_call_endpoint": "https://api.openai.com/v1/realtime/calls"
+  },
+  "session": {
+    "model": "gpt-realtime",
+    "voice": "marin",
+    "instructions": "You are Jarvis, a calm bedtime voice assistant for the One Thousand and One Night app. Listen carefully, keep your replies short, warm, and practical, and trigger only the safe supported app actions.",
+    "audio": {
+      "output": {
+        "voice": "marin"
+      }
+    }
+  },
+  "notes": {
+    "transport_recommendation": "webrtc",
+    "browser_use_case": "Use this session config for direct OpenAI speech-to-speech demos in the browser.",
+    "server_use_case": "Backend should mint the ephemeral client secret and the browser should complete the WebRTC call."
+  }
+}

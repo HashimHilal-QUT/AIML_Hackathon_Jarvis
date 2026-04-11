@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenAI Realtime Voice Test</title>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 32px;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 12px;
+    }
+    button.primary { background: #38bdf8; color: #082f49; }
+    button.secondary { background: #1e293b; color: #e2e8f0; }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #020617;
+      padding: 16px;
+      border-radius: 12px;
+      max-height: 280px;
+      overflow: auto;
+    }
+    audio {
+      width: 100%;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <h1>OpenAI Realtime Voice Test</h1>
+      <p>Click connect, allow microphone access, and speak. The browser connects directly to <code>gpt-realtime</code> using an ephemeral token minted by your backend.</p>
+      <div>
+        <button id="connect" class="primary">Connect</button>
+        <button id="disconnect" class="secondary" disabled>Disconnect</button>
+      </div>
+      <audio id="remoteAudio" autoplay></audio>
+    </section>
+
+    <section class="card">
+      <h2>Event Log</h2>
+      <pre id="log">Ready.\n</pre>
+    </section>
+  </main>
+
+  <script>
+    const connectButton = document.getElementById("connect");
+    const disconnectButton = document.getElementById("disconnect");
+    const remoteAudio = document.getElementById("remoteAudio");
+    const log = document.getElementById("log");
+
+    let pc = null;
+    let mediaStream = null;
+    let dataChannel = null;
+
+    const appendLog = (message) => {
+      log.textContent += `${new Date().toLocaleTimeString()} ${message}\n`;
+      log.scrollTop = log.scrollHeight;
+    };
+
+    const cleanup = () => {
+      if (dataChannel) {
+        dataChannel.close();
+        dataChannel = null;
+      }
+      if (pc) {
+        pc.close();
+        pc = null;
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+        mediaStream = null;
+      }
+      remoteAudio.srcObject = null;
+      connectButton.disabled = false;
+      disconnectButton.disabled = true;
+    };
+
+    connectButton.addEventListener("click", async () => {
+      connectButton.disabled = true;
+      appendLog("Requesting realtime session...");
+
+      try {
+        const tokenResponse = await fetch("/api/voice/realtime/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        });
+
+        if (!tokenResponse.ok) {
+          throw new Error(`Backend session request failed: ${tokenResponse.status}`);
+        }
+
+        const tokenData = await tokenResponse.json();
+        appendLog(`Received token for model ${tokenData.model} with voice ${tokenData.voice}.`);
+
+        pc = new RTCPeerConnection();
+        pc.ontrack = (event) => {
+          remoteAudio.srcObject = event.streams[0];
+          appendLog("Received remote audio track.");
+        };
+
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStream.getTracks().forEach((track) => pc.addTrack(track, mediaStream));
+
+        dataChannel = pc.createDataChannel("oai-events");
+        dataChannel.addEventListener("open", () => appendLog("Data channel connected."));
+        dataChannel.addEventListener("message", (event) => appendLog(`Event: ${event.data}`));
+        dataChannel.addEventListener("close", () => appendLog("Data channel closed."));
+
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        const sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${tokenData.client_secret}`,
+            "Content-Type": "application/sdp"
+          },
+          body: offer.sdp
+        });
+
+        if (!sdpResponse.ok) {
+          throw new Error(`OpenAI SDP exchange failed: ${sdpResponse.status}`);
+        }
+
+        const answer = {
+          type: "answer",
+          sdp: await sdpResponse.text()
+        };
+
+        await pc.setRemoteDescription(answer);
+        appendLog("Realtime voice session connected. Start speaking.");
+        disconnectButton.disabled = false;
+      } catch (error) {
+        appendLog(`Error: ${error.message}`);
+        cleanup();
+      }
+    });
+
+    disconnectButton.addEventListener("click", () => {
+      appendLog("Disconnecting.");
+      cleanup();
+    });
+  </script>
+</body>
+</html>

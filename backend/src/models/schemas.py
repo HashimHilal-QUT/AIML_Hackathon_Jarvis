@@ -159,6 +159,23 @@ class VoiceSessionStartResponse(APIModel):
     wake_phrase: str
 
 
+class RealtimeVoiceSessionRequest(APIModel):
+    model: str | None = None
+    voice: str | None = None
+    instructions: str | None = None
+
+
+class RealtimeVoiceSessionResponse(APIModel):
+    provider: str = "openai"
+    session_type: str = "realtime"
+    session_id: str | None = None
+    client_secret: str
+    expires_at: int | None = None
+    model: str
+    voice: str
+    instructions: str
+
+
 class VoiceAction(APIModel):
     action: ActionType
     arguments: dict[str, Any] = Field(default_factory=dict)
