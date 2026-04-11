@@ -1,0 +1,3 @@
+https://mytimetable.qut.edu.au/aplus/rest/calendar/ical/e33e0bd8-eec4-49b1-a662-7e7663604a4e
+
+https://canvas.qut.edu.au/feeds/calendars/user_VZlsUlksWjqHwuZTUliQIqHp7ue8JwwwHUiWhX7g.ics
