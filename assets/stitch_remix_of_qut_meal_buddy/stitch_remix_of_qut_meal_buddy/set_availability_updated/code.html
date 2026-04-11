@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Set Your Availability - Meal Buddy</title>
+<script type='text/javascript' nonce='Mox4WhWAA0PLP7LWhZFPHw==' src='https://contribution.usercontent.google.com/1TrjpNTolesKAuJpzeb8x_vnHggeUGY2TBqsjs2ko5Fx03mIs3I_OFp0DGW6xsQx38IIaWXMLN6RGdnEFLVT5SkHYQr49mDq0SAtU4HP-X9_DI8mDfC6jntM8lqX2RXhVMYW8yNz_T7bq20Za7jmNuRG0hl716GsIdJekH5XG9fLXGfXsPTujYJp19nYwvVPoViCXxCZWYG1faocWmgKPlKcfssUJFxtK3zzxltLEGTsGG3JBy1f8Vd_ym3bqsVysKZcabkFdGGXfFm6ehwQhpfmNjHb4NLdQCPIFBnl0cnfzsoTTtENrbCidX8dROZeFp406fTILQ0OazVoZYoUgGx8r3IglPLZcppT4UTBpvm5P3Rv0rdLIkRMz81BV3fgLi9vXbCR8WrDsjuI2Owh7AAQ8AO2vACihGdPVG9yszn1YB54GXXvJHWZ2BnzHWzsfHkCRWLSq2aRwyUd-_6gQyja5T-OOhqdCz2-U9miINjiFaQ7sj1yXwQthHf6C6wza7aNUYuCuyzgg_t5hFyLoRgtOr-JEcKpKsmQMgL5MDXzwOQuTJsi5fw4bDOHT89C3s1GGwkW7DAD-fhWoPiDVIxx7saBrAq4_QuFdTvPD6aDu98REvd5YDOfKghG8kRXqmhGKSbeX5QKsvIKQ13LL0mfnXNdCGsXZEFoB-hKIP-zenOTGGxOiU5nzbRBwL3mIFrZhR1rc2Z2YLtPYeYpX0fU9HcEG_kwnyi_CgQJstpBONIWiVcOOTXHo8mHJSZzqwqSKThN-Y3h15KuKg_1rxxCxWd2vFxtsy8RP8pj'></script><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface": "#f6f6ff",
+                "surface-container": "#e2e7ff",
+                "inverse-on-surface": "#8e9cc6",
+                "on-tertiary-container": "#005c15",
+                "inverse-surface": "#000c2b",
+                "secondary-dim": "#883700",
+                "background": "#f6f6ff",
+                "outline-variant": "#9eacd7",
+                "on-tertiary": "#d1ffc8",
+                "secondary-fixed-dim": "#ffb28c",
+                "on-tertiary-fixed-variant": "#12661e",
+                "tertiary-container": "#9df197",
+                "on-secondary-fixed": "#5c2300",
+                "on-secondary-container": "#7b3100",
+                "primary": "#2d5c98",
+                "on-primary": "#eef2ff",
+                "error-container": "#fb5151",
+                "surface-container-highest": "#d2dcff",
+                "tertiary-fixed-dim": "#90e28a",
+                "on-primary-fixed": "#002348",
+                "on-surface": "#1f2d51",
+                "on-primary-fixed-variant": "#04427c",
+                "secondary": "#9b3f00",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed-variant": "#893700",
+                "surface-variant": "#d2dcff",
+                "tertiary": "#176a21",
+                "surface-bright": "#f6f6ff",
+                "tertiary-fixed": "#9df197",
+                "primary-container": "#92bdff",
+                "on-error-container": "#570008",
+                "primary-fixed": "#92bdff",
+                "on-background": "#1f2d51",
+                "tertiary-dim": "#025d16",
+                "surface-container-low": "#eef0ff",
+                "error-dim": "#9f0519",
+                "surface-container-high": "#dae2ff",
+                "on-tertiary-fixed": "#00460e",
+                "secondary-fixed": "#ffc5aa",
+                "primary-fixed-dim": "#84b0f1",
+                "on-secondary": "#fff0ea",
+                "primary-dim": "#1e508b",
+                "outline": "#68769e",
+                "on-error": "#ffefee",
+                "surface-dim": "#c5d4ff",
+                "surface-tint": "#2d5c98",
+                "on-primary-container": "#00396d",
+                "on-surface-variant": "#4c5b81",
+                "error": "#b31b25",
+                "inverse-primary": "#92bdff",
+                "secondary-container": "#ffc5aa"
+            },
+            "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Be Vietnam Pro"],
+                "label": ["Be Vietnam Pro"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm shadow-blue-900/5">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-2">
+<span class="text-2xl font-black tracking-tight text-blue-700 dark:text-blue-400">Meal Buddy</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors px-3 py-1 rounded-lg" href="#">Discover</a>
+<a class="text-blue-800 dark:text-blue-300 font-bold border-b-2 border-blue-600 px-3 py-1" href="#">Availability</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors px-3 py-1 rounded-lg" href="#">Matches</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors px-3 py-1 rounded-lg" href="#">Profile</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="User profile" data-alt="professional headshot of a friendly young man with short hair and a warm smile in a brightly lit studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHfIX5N9uZQ4CL661nKVqWJpPhoZW1V_7uPvvQGmx2QyZmzjbuisR4Vri_QK0x-Ji9qGsLPnpiSuB02-89f-5TL2SzO7lM2ElSJUgRiMiNm74aUYWPUqXJNWQwbvu543_9vLvGyIgQzHykgS6TzzmQKlKNpFIiYYfH8h18nAXInpp_snPO-e16Zz9RylBs2cKRMh2nTB0lt7JndCjnXK_QAuN34rAyJ4wd4h8cDKmZSmDSXF4CEZyS-HXjF4B9vPQXtAo616r7ZRU"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 max-w-7xl mx-auto px-6">
+<!-- Hero Editorial Section -->
+<div class="mb-12 relative overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-dim p-8 md:p-12 text-on-primary">
+<div class="relative z-10 max-w-2xl">
+<h1 class="font-headline font-extrabold text-4xl md:text-5xl tracking-tight mb-4">When are we eating?</h1>
+<p class="text-lg opacity-90 font-medium mb-6">Select your preferred meal times for the upcoming week. We'll match you with students who share your schedule and culinary vibes.</p>
+<div class="flex flex-wrap gap-3">
+<div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="restaurant">restaurant</span>
+<span class="text-sm font-semibold">3 Matches Pending</span>
+</div>
+<div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-[18px]" data-icon="schedule">schedule</span>
+<span class="text-sm font-semibold">Updated 2h ago</span>
+</div>
+</div>
+</div>
+<div class="absolute -right-16 -bottom-16 w-80 h-80 opacity-20 pointer-events-none">
+<span class="material-symbols-outlined text-[320px]" data-icon="calendar_month">calendar_month</span>
+</div>
+</div>
+<!-- Weekly Selection Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Sidebar: Preferences -->
+<div class="lg:col-span-3 space-y-6">
+<div class="bg-surface-container-low p-6 rounded-lg">
+<h3 class="font-headline font-bold text-lg mb-4 text-primary">Preferences</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-outline mb-2">Campus Location</label>
+<select class="w-full bg-surface-container-highest border-none rounded-sm text-on-surface focus:ring-2 focus:ring-primary/20">
+<option>Main Quad Cafeteria</option>
+<option>Library Lounge</option>
+<option>Science Park Hub</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-bold uppercase tracking-wider text-outline mb-2">Match Style</label>
+<div class="grid grid-cols-1 gap-2">
+<label class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-DEFAULT cursor-pointer hover:bg-white transition-colors">
+<input checked="" class="text-secondary focus:ring-secondary" name="style" type="radio"/>
+<span class="text-sm font-medium">Quick Bite (30m)</span>
+</label>
+<label class="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-DEFAULT cursor-pointer hover:bg-white transition-colors">
+<input class="text-secondary focus:ring-secondary" name="style" type="radio"/>
+<span class="text-sm font-medium">Long Lunch (1h+)</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-tertiary-container/30 p-6 rounded-lg">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="tips_and_updates">tips_and_updates</span>
+<div>
+<h4 class="font-bold text-tertiary text-sm">Pro Tip</h4>
+<p class="text-xs text-on-tertiary-container mt-1 leading-relaxed">Selecting lunch slots increases match probability by 45%!</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Calendar Picker -->
+<div class="lg:col-span-9 bg-surface-container-low p-6 md:p-8 rounded-lg overflow-x-auto no-scrollbar">
+<div class="min-w-[700px]">
+<!-- Days Header -->
+<div class="grid grid-cols-8 mb-6 border-b border-outline-variant/10 pb-4">
+<div class="col-span-1"></div>
+<div class="text-center">
+<span class="block text-xs font-bold text-outline uppercase tracking-widest mb-1">Mon</span>
+<span class="text-xl font-bold text-on-surface">14</span>
+</div>
+<div class="text-center">
+<span class="block text-xs font-bold text-outline uppercase tracking-widest mb-1">Tue</span>
+<span class="text-xl font-bold text-on-surface">15</span>
+</div>
+<div class="text-center">
+<span class="block text-xs font-bold text-primary uppercase tracking-widest mb-1">Wed</span>
+<span class="text-xl font-bold text-primary">16</span>
+</div>
+<div class="text-center">
+<span class="block text-xs font-bold text-outline uppercase tracking-widest mb-1">Thu</span>
+<span class="text-xl font-bold text-on-surface">17</span>
+</div>
+<div class="text-center">
+<span class="block text-xs font-bold text-outline uppercase tracking-widest mb-1">Fri</span>
+<span class="text-xl font-bold text-on-surface">18</span>
+</div>
+<div class="text-center">
+<span class="block text-xs font-bold text-outline uppercase tracking-widest mb-1">Sat</span>
+<span class="text-xl font-bold text-on-surface">19</span>
+</div>
+<div class="text-center">
+<span class="block text-xs font-bold text-outline uppercase tracking-widest mb-1">Sun</span>
+<span class="text-xl font-bold text-on-surface">20</span>
+</div>
+</div>
+<!-- Slots Grid -->
+<div class="space-y-2">
+<!-- 11:30 AM (Lunch 1) -->
+<div class="grid grid-cols-8 items-center group">
+<div class="col-span-1 text-right pr-4 text-[10px] font-bold text-outline">11:30 AM</div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase">Lunch</span>
+</button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+</div>
+<!-- 12:30 PM (Lunch 2) -->
+<div class="grid grid-cols-8 items-center group">
+<div class="col-span-1 text-right pr-4 text-[10px] font-bold text-outline">12:30 PM</div>
+<div class="p-1"><button class="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase">Lunch</span>
+</button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase">Lunch</span>
+</button></div>
+<div class="p-1"><button class="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase">Lunch</span>
+</button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+</div>
+<!-- 06:00 PM (Dinner 1) -->
+<div class="grid grid-cols-8 items-center group">
+<div class="col-span-1 text-right pr-4 text-[10px] font-bold text-outline">06:00 PM</div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase">Dinner</span>
+</button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+</div>
+<!-- 07:00 PM (Dinner 2) -->
+<div class="grid grid-cols-8 items-center group">
+<div class="col-span-1 text-right pr-4 text-[10px] font-bold text-outline">07:00 PM</div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: &#39;FILL&#39; 1;">check_circle</span>
+<span class="text-[10px] font-bold uppercase">Dinner</span>
+</button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+<div class="p-1"><button class="w-full h-14 bg-surface-container-highest rounded hover:bg-primary-container/30 transition-all"></button></div>
+</div>
+</div>
+</div>
+<div class="mt-12 flex flex-col sm:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 bg-surface-container-highest rounded-sm"></div>
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Unavailable</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 bg-secondary-container rounded-sm"></div>
+<span class="text-xs font-bold text-secondary uppercase tracking-wider">Your Selection</span>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary-dim text-on-primary font-headline font-bold px-10 py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-3 active:scale-95">
+<span>Submit Availability</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Social Validation Section -->
+<div class="mt-20">
+<h2 class="font-headline font-extrabold text-2xl mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="volunteer_activism">volunteer_activism</span>
+            Popular times with your buddies
+        </h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Buddy Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-lg group hover:bg-white transition-all">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Sarah J." data-alt="portrait of a cheerful woman with long wavy brown hair wearing a green sweater against a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQlvtA_DUuNi0rsZWJPFCPRucSg9ks5QySIP0eRU-dsfBgnnNcVRwkZ12zOe5vMm6ej2pPYddvQhqV9cbFW8F81KyXYe85BXDvj8C9alCnrn7n8oYxBUZzO6z-JlYGEZ7aU8Tt9lgk23y26za1q35yfEeSAYzkP_xdQNReUauBxXHhdx3QE1JDl5qF2JnDD0MTeoyRpI_aM-7finnTQZBOjWopr8luCbqOdjiZmCLOiodl6HAeEz_X1ZJhsNzkNb-o_KnP1tqmFC8"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Sarah Jenkins</h4>
+<p class="text-xs text-outline font-medium">Philosophy Major</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="event_available">event_available</span>
+<span class="text-xs font-semibold">Available Wednesday, 12:30 PM</span>
+</div>
+<button class="mt-4 w-full py-2 bg-tertiary-container text-on-tertiary-container rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Match Now</button>
+</div>
+<!-- Buddy Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-lg group hover:bg-white transition-all">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Marcus T." data-alt="close-up of a smiling young man with curly hair and spectacles in warm natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNhq7JhPFK4NkL3WHn-zeOsMnsZ4XYsiCiVOZmFtmqjiNGPHYDsyEkDAQntwS6g2NEk2sw-4TTNEQAxCbz9O38MdLV8jIIbgnxygm-it2e7bT48aCcCv-dYceMI9AnOE6zqBAryDyuG9sryY75qXDGuNtyMIKchk7bM356zkiYOoWim6do_WjoEIRXd1N9ZQddYgkoZmfG9A3XDJkp3r7hPC-7YVWJoIfq9szxewllM6F_482jvDUIbYsIIJYp6iExVRdloIyLVYE"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Marcus Thorne</h4>
+<p class="text-xs text-outline font-medium">Computer Science</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="event_available">event_available</span>
+<span class="text-xs font-semibold">Available Tuesday, 06:00 PM</span>
+</div>
+<button class="mt-4 w-full py-2 bg-tertiary-container text-on-tertiary-container rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Match Now</button>
+</div>
+<!-- Buddy Card 3 -->
+<div class="bg-surface-container-low p-6 rounded-lg group hover:bg-white transition-all">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Lila K." data-alt="professional portrait of a young woman with a thoughtful expression and short black hair in soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe02hOi3pEHTTOUNOPiunwtvDc8CVlpJ1XCGUKtJloZF-mFJqgOYDl1Zij6aLFVwsuLTtlI09KRPR13K6qB8hxBOtqizcQOfSaTqEMYPWmnSmwHCUyhOLRGAVGu559MBKHaF_ToMRm1T1dYf0H-d8KekdmryR8PTnOTYc_f6cEZZiJJE5WQ32WIxrKzQOIPXoycK6OQdmPzzZSEI8PI5mIFAHUpatItwXUsO5rn88sugi5SWtZ7YGG1UKnvpfqDnhTadhWN3T_S_c"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Lila Kim</h4>
+<p class="text-xs text-outline font-medium">Fine Arts</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="event_available">event_available</span>
+<span class="text-xs font-semibold">Available Wednesday, 12:30 PM</span>
+</div>
+<button class="mt-4 w-full py-2 bg-tertiary-container text-on-tertiary-container rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Match Now</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-lg shadow-[0_-8px_24px_rgba(31,45,81,0.08)] rounded-t-[2.5rem] z-50 flex justify-around items-center px-4 pb-6 pt-3">
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-[&#39;Be_Vietnam_Pro&#39;] text-[11px] font-semibold">Discover</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-orange-100 dark:bg-orange-950/40 text-orange-900 dark:text-orange-200 rounded-full px-5 py-2 transition-all active:scale-90 duration-150">
+<span class="material-symbols-outlined" data-icon="calendar_today" style="font-variation-settings: &#39;FILL&#39; 1;">calendar_today</span>
+<span class="font-[&#39;Be_Vietnam_Pro&#39;] text-[11px] font-semibold">Availability</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-[&#39;Be_Vietnam_Pro&#39;] text-[11px] font-semibold">Matches</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-[&#39;Be_Vietnam_Pro&#39;] text-[11px] font-semibold">Profile</span>
+</button>
+</nav>
+</body></html>

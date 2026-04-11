@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Discover - Meal Buddy</title>
+<script type='text/javascript' nonce='7Cd/1gNlycBY5dE0eRHI1g==' src='https://contribution.usercontent.google.com/Y1xhrgkeAcC4Ce3C-rG-CQ_8vw_kMZxQPANGl2qHS_Ij4xcKuy_sNvmRgeQp1fpaASzG0769aZy2rFQ0nXxuXjSzIxcIIj7Qh_Ab0dzGh-nUtDPCTxwaJqA1UFGwdvBG2yh9yE21eF328ZDXJ07WCIsOarvfHnnKiYufJZ5RxHA9L8gNebEh-CsSWg63gSPF9xGVRiKhzSUXInBBIEv4RkIIkGlqCCuQek2rCCYhvw1PBCtzFpA0hS5F1QJq7TQPOvPBJZ1W8GHKxCYQQP48jrqNgInZznfwqvOsG4HfswfjdaCTNgl8r4puvPy-6zKyHhUd0uLKvHFfyYH9PMlUi39uE2E_4Nl1I1uDUPrZZWkM8whriLQ3x49j4jE6Iu8WPV8TOvgaJtUREzLGlu1hWCP2B_q1grspNx6g0zVNdGOU7eAdiLwZSgh2hM9G_ye4a87xFq88oe3WcH3wbov268TeYAvxhHEboMZ_xsgqu1-LqkdjIMY7hWmjZ8oB6untijoNlEk4hDNCVqQekwsv6myBM1KTxhfNnQKmSMhI8qT5xlPe9kZOQTOpELGyvvxx7OTPD8p9zBWfAIp4WhwOtgwBjGzWFfJfwk8WNzo-c9VFdvf5j_isvwfI1TdvR3Ua6QF-9ymkAS0xb6OphqWmnwRFd2_D89uxMXxrLd8cdh5Tixjpca4BEvrC68FB_kuGTWixq-smNKdXGGjWeuNe5hTCxY-DWklaNyP-H7Z4tn_5vc8WrDwVmeEAj_C0ee5-CrF7PjMH2mQHI5cSWU4LjHYKnvKnmb0U86Fq_56d'></script><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-dim": "#1e508b",
+                        "on-primary-container": "#00396d",
+                        "on-error-container": "#570008",
+                        "on-tertiary-fixed-variant": "#12661e",
+                        "background": "#f6f6ff",
+                        "surface-container-highest": "#d2dcff",
+                        "surface-container-high": "#dae2ff",
+                        "primary-fixed-dim": "#84b0f1",
+                        "error-container": "#fb5151",
+                        "secondary-container": "#ffc5aa",
+                        "on-secondary-fixed": "#5c2300",
+                        "tertiary": "#176a21",
+                        "primary-container": "#92bdff",
+                        "on-tertiary": "#d1ffc8",
+                        "on-secondary-container": "#7b3100",
+                        "secondary-fixed-dim": "#ffb28c",
+                        "secondary": "#9b3f00",
+                        "on-primary": "#eef2ff",
+                        "tertiary-dim": "#025d16",
+                        "on-background": "#1f2d51",
+                        "on-secondary-fixed-variant": "#893700",
+                        "tertiary-fixed-dim": "#90e28a",
+                        "inverse-on-surface": "#8e9cc6",
+                        "on-surface": "#1f2d51",
+                        "error-dim": "#9f0519",
+                        "on-surface-variant": "#4c5b81",
+                        "tertiary-container": "#9df197",
+                        "on-error": "#ffefee",
+                        "surface": "#f6f6ff",
+                        "secondary-dim": "#883700",
+                        "surface-bright": "#f6f6ff",
+                        "secondary-fixed": "#ffc5aa",
+                        "on-primary-fixed": "#002348",
+                        "error": "#b31b25",
+                        "surface-container": "#e2e7ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#005c15",
+                        "on-tertiary-fixed": "#00460e",
+                        "outline": "#68769e",
+                        "surface-variant": "#d2dcff",
+                        "surface-tint": "#2d5c98",
+                        "inverse-surface": "#000c2b",
+                        "surface-dim": "#c5d4ff",
+                        "outline-variant": "#9eacd7",
+                        "on-secondary": "#fff0ea",
+                        "inverse-primary": "#92bdff",
+                        "tertiary-fixed": "#9df197",
+                        "surface-container-low": "#eef0ff",
+                        "on-primary-fixed-variant": "#04427c",
+                        "primary-fixed": "#92bdff",
+                        "primary": "#2d5c98"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Be Vietnam Pro"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-7xl mx-auto">
+<h1 class="text-2xl font-extrabold tracking-tight text-blue-700 dark:text-blue-400">Meal Buddy</h1>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-high px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-label ml-2 w-48" placeholder="Search eateries..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">account_circle</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-7xl mx-auto space-y-12">
+<!-- Hero: The Hot List -->
+<section>
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-secondary font-bold tracking-widest uppercase text-xs">Trending Now</span>
+<h2 class="text-4xl font-extrabold tracking-tight mt-1">The Hot List</h2>
+</div>
+<button class="text-primary font-bold text-sm hover:underline">View All</button>
+</div>
+<div class="flex overflow-x-auto gap-6 no-scrollbar pb-4 -mx-6 px-6">
+<!-- Rank 1 -->
+<div class="relative flex-shrink-0 w-80 group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
+<div class="absolute -top-4 -left-4 z-10 bg-secondary text-on-secondary px-4 py-2 rounded-lg font-black text-2xl rotate-[-12deg] shadow-lg">No 1</div>
+<div class="h-96 rounded-lg overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Close-up of vibrant gourmet burgers with melting cheese and fresh toppings in a trendy neon-lit restaurant setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrXXjD4yYo8nwSjGnnAaZS_CJCBaHxEmDhp1Q8xhXiW05UwSw1r7fZsK7Ow7iMkx4RSk2agaQ23zmVdBLiF8ntUQsGuoxu1WxGJ_qGSC1vsaudq7GbBWsQcjUp-qTaKRsvAUClygYvzeNZTiReoWA4ZTldnjzDZRT7FlFKlt2DKlkyMlCbY5K91RZbDEW5DZ67sw5UraDDJRR4OgijNl02_x0tcxrG9g1KqzbhHOOXKbyyIHt4snp4AzOAO7pl1YPZbFTyDxRHsiTd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+<h3 class="text-white text-2xl font-bold">Grill &amp; Chill</h3>
+<p class="text-white/80 text-sm">Best Artisanal Burgers in Town</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase">4.9 ★</span>
+<span class="text-white/60 text-[10px] uppercase font-bold tracking-wider">Social Favorite</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank 2 -->
+<div class="relative flex-shrink-0 w-80 group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
+<div class="absolute -top-4 -left-4 z-10 bg-primary text-on-primary px-4 py-2 rounded-lg font-black text-2xl rotate-[-12deg] shadow-lg">No 2</div>
+<div class="h-96 rounded-lg overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Artistically arranged premium sushi platter with fresh salmon and tuna on a slate plate with soft moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn2wqkNCBmJ622nfkSZE2u_SRvbCx9oB6mzdroSdw427_T8LU-R6KNYenoG_xWFrU83dMoqrCJGwK6CFi6248Gz629213_EFnFSU1T-q8L7MDfek4c1b8u4vj9s7oBKD92FfeN3_emO-xa7OSFxFYor8wgJ_jQLwMx1bFX7UcTAdXrQT0pRb-8GZ4pKfWY5si51939AZnS_ufva8sy8z_7gLXmpalTwywzfglUzEw_rRTYz2FdsTsM6tsDwxa4l-OyPelNMnyvT9NR"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+<h3 class="text-white text-2xl font-bold">Sushi Zen</h3>
+<p class="text-white/80 text-sm">Authentic Japanese Experience</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase">4.8 ★</span>
+<span class="text-white/60 text-[10px] uppercase font-bold tracking-wider">Most Shared</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank 3 -->
+<div class="relative flex-shrink-0 w-80 group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
+<div class="absolute -top-4 -left-4 z-10 bg-tertiary text-on-tertiary px-4 py-2 rounded-lg font-black text-2xl rotate-[-12deg] shadow-lg">No 3</div>
+<div class="h-96 rounded-lg overflow-hidden bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Rustic wooden table with large stone-fired pepperoni pizzas and sparkling cocktails in a warm sunlit outdoor patio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyrsWZI8z8iRwLraxnhL97PPaInk3S52stol6sxEchNuEi5WpkZ5arCmoFd9LOkYLUNuNFU6YCLlEIU58zgw5uSSpPZVH4IQ6FxIGgwbZDGtrfV8bcX0G1xjmxA8hu5s-b-fvlVujg1eXeEP0Td1SDEyw8_4gGefi25-BwSUz4N1AmbtaKpzBiUr_-JxQbvK2xdctJ-1INgcEpg3cnJ1WpPUcMGNTTyDFeHb71cZutZP9BL7AVnyZL2pEuYOxGufX2jpvXCVnJvCni"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+<h3 class="text-white text-2xl font-bold">Rustic Pizza</h3>
+<p class="text-white/80 text-sm">Traditional Wood-Fired Slices</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase">4.7 ★</span>
+<span class="text-white/60 text-[10px] uppercase font-bold tracking-wider">Top Rated</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Matching Section: Curated for you -->
+<section class="bg-surface-container-low -mx-6 px-6 py-12 rounded-[2.5rem]">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight">Curated for you</h2>
+<p class="text-on-surface-variant mt-2 max-w-md">Pick up to 3 restaurants you're craving to find your perfect dining match.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-highest px-6 py-3 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">restaurant</span>
+<span class="font-bold text-on-surface">Selected <span class="text-primary">0/3</span></span>
+</div>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold opacity-50 cursor-not-allowed">Find Matches</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-lg group transition-all hover:bg-white hover:shadow-xl">
+<div class="relative h-48 rounded-lg overflow-hidden mb-4">
+<img class="w-full h-full object-cover" data-alt="Colorful stack of fluffy pancakes with melting butter and maple syrup on a bright marble surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbS85he-vL6qoaMjlZsqPGJ56NI1vKBbIf8ij-Xj2x-LFfGNPGw0lnwWV2peDzAiKUrGmVZ7Ae8_y62LE3dvtiYvGOi0YJs_MozS2cLgaScqYVGZmJJUmnCO9P-pSdVsMX6rF6aT0Fj3ulnkeg0x302rX1oGLeadSC8YObF1mqSzj3Z19TMs0xNsgcAliya87abjm6fbA-pK8w3BvJjDDpaLPxkyR4RFthvpVSnFtH2ywaJRHUCimKfH_y_lOwkaicCJSsCeTKj_vv"/>
+<button class="absolute top-3 right-3 bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg">Pancake Palace</h4>
+<p class="text-on-surface-variant text-sm italic">"The best breakfast in the city"</p>
+</div>
+<span class="text-secondary font-bold">$12-$20</span>
+</div>
+<div class="flex items-center gap-3 mt-4">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of a smiling young man in a casual denim shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1-TRZGGJQbC_OmR9XwEhdIoLtJCETjgtOQGIgef_t1yTWLb5HlrMkV1OI8-0UV2BUjV4RRcJL3S8FTdB2_y8CmslMWNukJS3MkHBvKOgYj5Yy_MpLCK5xm-dva6YXhUa6QVVGYhrwthvIKSwjMyB_HcnoM_tMBxvCl4FHL-lx2JI-TWEzdXE7YatZuYc8c1wr1XecW5duQ_T3m7lcVc_k1d4wCVMY6TN5t-Zjtr_yHrDV526LG_NG_FPOXaeOJtkHsW7FbPO-mQfV"/>
+<img class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of a woman with curly hair laughing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ0uPjOa0GAevqlGq0ipjHML77MnK2teBF8uqaeQsi4YSHshXp86VKT51VOSfEEICWRLX3K6SEywIruBwSefvctOqWDQogSJKN79yv6vPS2urpfM6MHjEuv5VT6Pu6VwwE1yp7Z97EBAUcSirThgi0KSMiS2gH9J_4jkMncKuaWyK-RDOeSwcw0r98GycpNU1KHJLSPUYX_a64GHYBpyRarXjYOeBTI8EAz-nC4_vvQm6xNxBglWn0VJf_nsT0Xn6oVc9eYi9AZ7AW"/>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">12 Friends Ate Here</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-lg group transition-all hover:bg-white hover:shadow-xl">
+<div class="relative h-48 rounded-lg overflow-hidden mb-4">
+<img class="w-full h-full object-cover" data-alt="Modern upscale restaurant interior with sleek furniture and warm architectural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfrPCbLUljQrPrXybPlgSn3w-Ioqy8YoXqau1POeemL6ZNOy3XaZpHcbezemlMDP7wc7Z8a7dVzbLmJ9K5dR-itpyiy1elCHCo0n2rtfcCo15NSIW_HApY2jQezZrXC-w0mMXtfI970utxIIugIxZpDnPs0evhDTc0o6wmG5cg-QjO7GpfJ8VJNZJI0OjlruWvk2fSxHKI2883LulQEW3lcgJb3M9W6Ey_mkSpujEm7-J8f_projHDWjrr39MidHLgHlnxuC_P5dOT"/>
+<button class="absolute top-3 right-3 bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg">The Glass House</h4>
+<p class="text-on-surface-variant text-sm italic">"Elegant dining, refined taste"</p>
+</div>
+<span class="text-secondary font-bold">$40-$80</span>
+</div>
+<div class="flex items-center gap-3 mt-4">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Professional man with glasses smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZXrQw69xCx4Y9A6pQWV3ZxdNp8_DIYSpnDqlNFp-Sxhv_MFtiyWAUuURlKlWipJTAf8AD4buYXXt6dkc3-PFf_Dqy-gcO-eAOWjHxTNuLRKhnBhN6MOKAOJQvDSgM0By2J74DbdvwjgMU2DUrYRvIqpnoAf9YGRlNfYsYBn0m-dLjkCWSYKRB56hr7DT3eQ3yg2YhhXK73Iylw5nLlU86jl3j9PRToCvz85uneLPERLmthctJ3iFGDuBpI7_H26ECzznO6hPCvsx1"/>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">5 Matches Today</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-4 rounded-lg group transition-all hover:bg-white hover:shadow-xl">
+<div class="relative h-48 rounded-lg overflow-hidden mb-4">
+<img class="w-full h-full object-cover" data-alt="Close-up of a fresh wood-fired pizza with bubbling cheese and fresh basil" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwpOXKiZrg50xGbU8GBKxKPvQ0vPcJpTmnkAzNZDRf2sSE8LqZOkTENFDXcCzHvgvMIYh27qdKh6EfFWGO_WNElKjmN7w226_hkplQR5U361XCXFtVHBaXM-tEjNZ0ZyW26F4OThwxBjbHIaMb0DzHc1FvmSU0girlyJIsZYb8DvG4aJYkTx20cbYhnmMpd3aASDl7nGqy5Xxb3cG80kz3jmOFh_1akMgDRJIE1nuoLqGmWNNMcrBaGUkK8kzwsAp5Bb8YY21JluRV"/>
+<button class="absolute top-3 right-3 bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-white hover:text-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg">Napoli Slices</h4>
+<p class="text-on-surface-variant text-sm italic">"A slice of Italy in every bite"</p>
+</div>
+<span class="text-secondary font-bold">$15-$25</span>
+</div>
+<div class="flex items-center gap-3 mt-4">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Smiling young woman with blonde hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6N98sYLbNafW9E3JiIVP8YP_eL4MEWYNUVeQj4rEJmj1lKAwCtByZUwirwDbk2H07PsAuGpIcHSS4c9T93lyITYMqqcSWHNSGD6B9T-_eguc5F61lwh5M_42Xt5a-UhEgyE69sDW0uvDrJgpeS8fvplJcHL1cMsiqArGEFvbcZtQQcQYWMn2uxNdN1-1PJ4RhzL2y4J5HrI8tvdlTjjNNc3I5-MJwDxOsRCcE9CtL6kCaiXzQdWk8F9eVTmCq7umGd6MyS6oM2n4t"/>
+<img class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of a young man with a beard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClHKFQienWtBlQakJHstzeYnIaOpj1XxvG5IBGXG-rFsfrGoE1SWxdiILc0CSWDfDmp9_3RxIHBiQ3vZ75XY0uoSNylxbrq03gUx_7PjM3mS_Y-SSoC1gHP1YzTDB8rLliJCDkRoYFP6tm9evd4gj2sVMjBwcOjPYfdxA9vUhbvfl8GvOWcPpdSe0Tbj5gdd9rmJIre1e4OVDrGbDxwy677kNbtrxq_-sczlLzHapUKeKtuSrTqvjmIbYn9q3T20EoHUqs2cWlEkTe"/>
+<img class="w-6 h-6 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Stylish woman in soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBToqsytOU6Byb6icd0dpWmubnmPIDaR3T2Zth8iwiJdnoZU-uLOZ1fKG1N2PNlB_d6-WKAV2sMgH03SE0WwZvZcBg1AsYxO9_4LcUiFOagrpJvkiQlcJOJZhPMY22kH9CmW5jHSLpsQQvsEj3ONCsFKPsgHBRMS4ExYRCiV62JtgUQg1KVySXS1ak_dn5Ed9czZ6px60VqOmc3N-fvX_b3373n8jV1y4q9hCuTZZX1UyhJOS7F5J5Vgu1MybZd2_DjwFkov12IvB0"/>
+</div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">8 Friends Interested</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="pb-12">
+<h2 class="text-2xl font-extrabold mb-6">Meal Buddy Stats</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-primary text-on-primary p-6 rounded-lg relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-xs uppercase font-bold opacity-80 tracking-widest mb-1">Matches Made</p>
+<h4 class="text-4xl font-black">124</h4>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12 transition-transform group-hover:scale-110">handshake</span>
+</div>
+<div class="bg-secondary text-on-secondary p-6 rounded-lg relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-xs uppercase font-bold opacity-80 tracking-widest mb-1">Points Earned</p>
+<h4 class="text-4xl font-black">2,450</h4>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12 transition-transform group-hover:scale-110" data-weight="fill">stars</span>
+</div>
+<div class="bg-tertiary text-on-tertiary p-6 rounded-lg relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-xs uppercase font-bold opacity-80 tracking-widest mb-1">Eateries Visited</p>
+<h4 class="text-4xl font-black">18</h4>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12 transition-transform group-hover:scale-110">restaurant</span>
+</div>
+<div class="bg-surface-container-highest p-6 rounded-lg relative overflow-hidden group">
+<div class="relative z-10">
+<p class="text-xs uppercase font-bold text-on-surface-variant tracking-widest mb-1">Social Rank</p>
+<h4 class="text-4xl font-black text-on-surface">Top 5%</h4>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10 rotate-12 transition-transform group-hover:scale-110">trending_up</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_-12px_32px_rgba(31,45,81,0.06)] rounded-t-[32px] md:hidden">
+<a class="flex flex-col items-center justify-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-100 rounded-full px-6 py-2 transition-transform duration-300 ease-out scale-110" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-[&#39;Plus_Jakarta_Sans&#39;] text-[10px] font-bold uppercase tracking-wider mt-1">Discover</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-6 py-2 hover:text-blue-600 dark:hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-[&#39;Plus_Jakarta_Sans&#39;] text-[10px] font-bold uppercase tracking-wider mt-1">Social</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-6 py-2 hover:text-blue-600 dark:hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-[&#39;Plus_Jakarta_Sans&#39;] text-[10px] font-bold uppercase tracking-wider mt-1">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-6 py-2 hover:text-blue-600 dark:hover:text-blue-300" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-[&#39;Plus_Jakarta_Sans&#39;] text-[10px] font-bold uppercase tracking-wider mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
