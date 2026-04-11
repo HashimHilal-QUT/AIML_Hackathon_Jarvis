@@ -231,34 +231,6 @@ git stash pop
 
 
 
-# Bedtime Stories - Requirements Definition
-
-## Product Name
-**One Thousand and One Night**
-
----
-
-## 1. Overview
-This system is an application that generates, displays, and narrates personalized bedtime stories to help users relax before sleep.  
-Users can select a genre, mood, story length, voice gender, and voice speed to enjoy a bedtime story tailored to their preferences.
-
----
-
-## 2. Purpose
-- To provide a calming experience before sleep
-- To generate stories based on user preferences
-- To allow users to enjoy stories through both reading and voice playback
-- To deliver a simple and soothing interface suitable for bedtime use
-
----
-
-## 3. Target Users
-- People who want to relax before sleep
-- People who enjoy personalized short stories
-- Users who want bedtime storytelling as part of stress relief or sleep preparation
-- Students and other users who want to unwind at night
-
----
 
 # 🍽️ Meal Buddy (QUT Edition)
 
@@ -407,6 +379,37 @@ Collect user feedback after the experience
 - Cancellation / no-show handling  
 - In-app chat before meetup  
 - Trust and rating system  
+
+
+
+# Bedtime Stories - Requirements Definition
+
+## Product Name
+**One Thousand and One Night**
+
+---
+
+## 1. Overview
+This system is an application that generates, displays, and narrates personalized bedtime stories to help users relax before sleep.  
+Users can select a genre, mood, story length, voice gender, and voice speed to enjoy a bedtime story tailored to their preferences.
+
+---
+
+## 2. Purpose
+- To provide a calming experience before sleep
+- To generate stories based on user preferences
+- To allow users to enjoy stories through both reading and voice playback
+- To deliver a simple and soothing interface suitable for bedtime use
+
+---
+
+## 3. Target Users
+- People who want to relax before sleep
+- People who enjoy personalized short stories
+- Users who want bedtime storytelling as part of stress relief or sleep preparation
+- Students and other users who want to unwind at night
+
+---
 
 ## 4. Functional Requirements
 
