@@ -534,3 +534,6 @@ Items produced by the system:
 - Child / adult mode
 - Multilingual support
 - Sleep timer
+
+## 9. UI image
+![Bedtime Stories UI](./wireframe/screens/UIImage.png)
