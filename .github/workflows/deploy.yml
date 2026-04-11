@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -21,7 +22,85 @@ jobs:
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           port: 22
           debug: true
+          envs: NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,TOKEN,GIT_PWD,VM_IP,VM_PASSWORD,VM_USER
           script: |
+            echo "========================================"
+            echo "        JARVIS DEPLOYMENT STARTING"
+            echo "========================================"
+
+            # Pull latest code
             cd /home/jarvis/Project
-            git pull origin main
-            echo "Deploy complete"
+            git fetch origin
+            git reset --hard origin/main
+            echo "✅ Code synced from GitHub"
+
+            # Write all secrets into .env file for the backend
+            cat > /home/jarvis/Project/backend/.env <<EOF
+            NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+            SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+            TOKEN=${TOKEN}
+            VM_IP=${VM_IP}
+            VM_PASSWORD=${VM_PASSWORD}
+            VM_USER=${VM_USER}
+            EOF
+            echo "✅ Secrets written to backend/.env"
+
+            # Activate venv and install dependencies
+            source /home/jarvis/Project/backend/venv/bin/activate
+            pip install -r /home/jarvis/Project/backend/requirements.txt -q
+            echo "✅ Dependencies installed"
+
+            # Verify secrets are accessible
+            echo ""
+            echo "--- Secret Verification ---"
+            check_secret() {
+              local name=$1
+              local value=$2
+              if [ -z "$value" ]; then
+                echo "❌ FAIL : $name — NOT SET"
+              else
+                echo "✅ PASS : $name — set (starts with: ${value:0:8}...)"
+              fi
+            }
+
+            check_secret "NEXT_PUBLIC_SUPABASE_URL"      "${NEXT_PUBLIC_SUPABASE_URL}"
+            check_secret "NEXT_PUBLIC_SUPABASE_ANON_KEY" "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
+            check_secret "SUPABASE_SERVICE_ROLE_KEY"     "${SUPABASE_SERVICE_ROLE_KEY}"
+            check_secret "TOKEN"                          "${TOKEN}"
+            check_secret "GIT_PWD"                        "${GIT_PWD}"
+            check_secret "VM_IP"                          "${VM_IP}"
+            check_secret "VM_PASSWORD"                    "${VM_PASSWORD}"
+            check_secret "VM_USER"                        "${VM_USER}"
+
+            # Test Supabase connectivity
+            echo ""
+            echo "--- Supabase Connectivity Test ---"
+            python3 - <<PYEOF
+            import sys
+            try:
+                from supabase import create_client
+                import os
+                url = "${NEXT_PUBLIC_SUPABASE_URL}"
+                key = "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
+                supabase = create_client(url, key)
+                result = supabase.table("profiles").select("id").limit(1).execute()
+                print("✅ PASS : Supabase connection OK — profiles table reachable")
+            except Exception as e:
+                print(f"❌ FAIL : Supabase connection failed — {str(e)}")
+                sys.exit(1)
+            PYEOF
+
+            echo ""
+            echo "========================================"
+            echo "        JARVIS DEPLOYMENT COMPLETE ✅"
+            echo "========================================"
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TOKEN: ${{ secrets.TOKEN }}
+          GIT_PWD: ${{ secrets.GIT_PWD }}
+          VM_IP: ${{ secrets.VM_IP }}
+          VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
+          VM_USER: ${{ secrets.VM_USER }}
