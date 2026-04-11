@@ -45,7 +45,7 @@ function BottomNav() {
         )}
       </NavLink>
       <NavLink
-        to="/welcome"
+        to="/dining-preferences"
         className={({ isActive }) =>
           `flex flex-col items-center justify-center px-5 py-2 ${isActive ? 'text-blue-800' : 'text-slate-400'}`
         }

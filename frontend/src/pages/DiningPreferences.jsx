@@ -1,60 +1,63 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MaterialIcon } from '../components/MaterialIcon'
+import {
+  cuisineLabelToId,
+  usePreferences,
+  WELCOME_CUISINE_LABELS,
+  WELCOME_DIETARY_LABELS,
+} from '../context/PreferencesContext'
 
-const CUISINES = [
-  {
-    id: 'asian',
-    label: 'Asian',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA_-pre3P7aFJytrw-p9pXBlAtck2NSgXwRWC-rixDj0-Hl0vaaEwQ3cHNH3G9UBIbzU9HXTbYRL9kcbfgIOPZft8dVNx4kOwwhdbEg6jRSMwd47Ke8yk9Rucex2dxYTMzRq_741nXLT4dfUMZ-4eAimgIQzDiJ4-ee_BJv6P4b1ZlIwVQW8snvtkDi1w9MyQbsH4sF2k5EilChbvwgvNRk-AUbbF61hxWn4PJlpNcxOa0Q3BiYZ7NWdP5ahthFQQIUUUl1bMdmwo0',
-  },
-  {
-    id: 'western',
-    label: 'Western',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLFJPYuqu4--2_dZkEIaVHhCNQ9bByKMkh3vNvZoMbDSIpj5eu-WvECdsoYfCbL7eh8fZ39Sd7kAF8eVsHzGgNe1Nv6d18hfEAqydILQyXfqXzGVrQAPoXNeMYMu3wyWFfiEQ-GzZ8tdbGHHFH0HfqEZTtRScMiNRTRtz67Qsa4o8LIAfeq1l71xcMbjm8OlTclc7pruGbm8rkqDJ68XT75GrC9azClQkvhYNilYfcfCJKXLHdYiSebrsIDluoOGf2ZsjJtDtK_t4',
-  },
-  {
-    id: 'italian',
-    label: 'Italian',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy6JLhGXi59WghFbZyvdGS3g2lMWmrFN35QfNf4Sm83P56ZKd0aZRZXLriQzpDnnqIKXw-hLBkHz6TASN_fDj4oEPXu14xrNKS1HlzuQjb_ZeiDX9PvOS_QIfQxdBkoKK8CX2DwHHAOCFsrnSf0IuilrJLBCw6ZIrfbNMv-4jxV5awJ4tsaRcZGB0VMh6NIWG8Ct0GZC6uX0PBve1cfwp3mIuXqG8AW6nTkrpQLOCjn3qgFeWYN3cThSLmUucSAD3Xlt9yWGfFRsY',
-  },
-  {
-    id: 'indian',
-    label: 'Indian',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA6vzRTiTfl9UI_zbaqcAtZEfe2v5Gd3INUktIj_SY3mwqM-Jj-JnbURjoPOHFyfLAh3IBiRyZn_yWlUm6VmKSL5SRkQz4robBaW7_EUD50tTd16AJ7VnRpQdp2swj8gRgrcJVq-OqPodltJqv17lnIW-wedCkIVqrbgtKJkrHPhreRla3sHlYejlNnG4hn07UyGa7Whxs_LfnJVFiLD1cp0_NCpTP2VOpWE5axnQtiMGvjyKENzaDYhqBy_MOToQmPrcQ6M9glHhk',
-  },
-  {
-    id: 'healthy',
-    label: 'Healthy',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDpZcIXDzN3vS8NW4e2cPeY_MpqiNM9lugKkXBoN_cRzh-KVj0_dqXdAo7oA0BQfx4b1NFbyTcE5xAdPjWbczDawNezaYzY52GZg3giGlKaAIWlJauScp0WxK7svKuaud2m7TqcTihd_NbyEU-VgLs3kjVtCI5hKQSTIvgI2cn4qe1mEEi48N7uNI5vsXFysv_ywVcI3CH-1QNQ5nnFwRwZkDApfsBKCCIrLlrXIqH7wTJ7sCmONoqbHiJ6L7MDeikwLnty7P8omaQ',
-  },
-]
+/** Stitch / Discover 由来の Google Aida 画像 */
+const IMG_PIZZA =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuAwpOXKiZrg50xGbU8GBKxKPvQ0vPcJpTmnkAzNZDRf2sSE8LqZOkTENFDXcCzHvgvMIYh27qdKh6EfFWGO_WNElKjmN7w226_hkplQR5U361XCXFtVHBaXM-tEjNZ0ZyW26F4OThwxBjbHIaMb0DzHc1FvmSU0girlyJIsZYb8DvG4aJYkTx20cbYhnmMpd3aASDl7nGqy5Xxb3cG80kz3jmOFh_1akMgDRJIE1nuoLqGmWNNMcrBaGUkK8kzwsAp5Bb8YY21JluRV'
+const IMG_SUSHI =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuDn2wqkNCBmJ622nfkSZE2u_SRvbCx9oB6mzdroSdw427_T8LU-R6KNYenoG_xWFrU83dMoqrCJGwK6CFi6248Gz629213_EFnFSU1T-q8L7MDfek4c1b8u4vj9s7oBKD92FfeN3_emO-xa7OSFxFYor8wgJ_jQLwMx1bFX7UcTAdXrQT0pRb-8GZ4pKfWY5si51939AZnS_ufva8sy8z_7gLXmpalTwywzfglUzEw_rRTYz2FdsTsM6tsDwxa4l-OyPelNMnyvT9NR'
+const IMG_GREEK_SALAD =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuCy6JLhGXi59WghFbZyvdGS3g2lMWmrFN35QfNf4Sm83P56ZKd0aZRZXLriQzpDnnqIKXw-hLBkHz6TASN_fDj4oEPXu14xrNKS1HlzuQjb_ZeiDX9PvOS_QIfQxdBkoKK8CX2DwHHAOCFsrnSf0IuilrJLBCw6ZIrfbNMv-4jxV5awJ4tsaRcZGB0VMh6NIWG8Ct0GZC6uX0PBve1cfwp3mIuXqG8AW6nTkrpQLOCjn3qgFeWYN3cThSLmUucSAD3Xlt9yWGfFRsY'
+const IMG_CURRY =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuA6vzRTiTfl9UI_zbaqcAtZEfe2v5Gd3INUktIj_SY3mwqM-Jj-JnbURjoPOHFyfLAh3IBiRyZn_yWlUm6VmKSL5SRkQz4robBaW7_EUD50tTd16AJ7VnRpQdp2swj8gRgrcJVq-OqPodltJqv17lnIW-wedCkIVqrbgtKJkrHPhreRla3sHlYejlNnG4hn07UyGa7Whxs_LfnJVFiLD1cp0_NCpTP2VOpWE5axnQtiMGvjyKENzaDYhqBy_MOToQmPrcQ6M9glHhk'
 
-const DIETARY = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Dairy-Free', 'Nut Allergy', 'Low Carb']
+/** リポジトリに無い地域向けは Unsplash（料理の内容が分かるもの） */
+const IMG_TACOS =
+  'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+const IMG_THAI =
+  'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=800&q=80'
+const IMG_KOREAN =
+  'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+const IMG_PHO =
+  'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80'
+
+/** Welcome と同じ8種。各国・地域に合わせた画像 */
+const CUISINE_IMAGES = {
+  italian: IMG_PIZZA,
+  japanese: IMG_SUSHI,
+  mexican: IMG_TACOS,
+  indian: IMG_CURRY,
+  mediterranean: IMG_GREEK_SALAD,
+  thai: IMG_THAI,
+  korean: IMG_KOREAN,
+  vietnamese: IMG_PHO,
+}
+
+const CUISINES = WELCOME_CUISINE_LABELS.map((label) => {
+  const id = cuisineLabelToId(label)
+  return { id, label, img: CUISINE_IMAGES[id] }
+})
 
 export default function DiningPreferences() {
-  const [selected, setSelected] = useState(() => new Set(['asian', 'healthy']))
-  const [budgetTier, setBudgetTier] = useState('value')
-  const [diet, setDiet] = useState(() => new Set(['vegetarian', 'halal']))
-  const [budget, setBudget] = useState(30)
+  const {
+    diningCuisineIds,
+    budgetAmount,
+    budgetTier,
+    dietaryKeys,
+    toggleDiningCuisine,
+    setBudgetAmount,
+    setBudgetTier,
+    toggleDietary,
+  } = usePreferences()
 
-  const toggleCuisine = (id) => {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  const toggleDiet = (key) => {
-    setDiet((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
-  }
+  const selected = new Set(diningCuisineIds)
+  const diet = new Set(dietaryKeys)
 
   return (
     <main className="max-w-4xl mx-auto px-6 pt-12 pb-24 md:pt-20 bg-surface font-body text-on-surface antialiased min-h-screen">
@@ -92,7 +95,7 @@ export default function DiningPreferences() {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => toggleCuisine(c.id)}
+                  onClick={() => toggleDiningCuisine(c.id)}
                   className={`cuisine-card text-left overflow-hidden rounded-[2rem] bg-surface-container-low transition-all duration-300 shadow-sm h-48 flex flex-col border-4 ${
                     on ? 'border-secondary bg-white' : 'border-transparent'
                   }`}
@@ -123,13 +126,17 @@ export default function DiningPreferences() {
                   max={100}
                   min={10}
                   type="range"
-                  value={budget}
-                  onChange={(e) => setBudget(Number(e.target.value))}
+                  value={budgetAmount}
+                  onChange={(e) => setBudgetAmount(Number(e.target.value))}
+                  aria-valuemin={10}
+                  aria-valuemax={100}
+                  aria-valuenow={budgetAmount}
+                  aria-label="Daily budget in dollars"
                 />
                 <div className="flex justify-between mt-4 text-sm font-semibold text-on-surface-variant">
                   <span>$10</span>
                   <span className="text-primary bg-primary-container/20 px-3 py-1 rounded-full">
-                    $30 - $45
+                    ${budgetAmount}
                   </span>
                   <span>$100+</span>
                 </div>
@@ -163,14 +170,14 @@ export default function DiningPreferences() {
               <h2 className="font-headline font-bold text-xl">Dietary Requirements &amp; Allergies</h2>
             </div>
             <div className="flex flex-wrap gap-3">
-              {DIETARY.map((label) => {
+              {WELCOME_DIETARY_LABELS.map((label) => {
                 const key = label.toLowerCase().replace(/\s+/g, '-')
                 const on = diet.has(key)
                 return (
                   <button
                     key={label}
                     type="button"
-                    onClick={() => toggleDiet(key)}
+                    onClick={() => toggleDietary(key)}
                     className={
                       on
                         ? 'bg-tertiary-container text-on-tertiary-container px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-tertiary-fixed transition-colors'

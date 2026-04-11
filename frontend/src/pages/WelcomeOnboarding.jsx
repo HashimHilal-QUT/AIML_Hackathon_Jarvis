@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { MaterialIcon } from '../components/MaterialIcon'
+import { usePreferences, WELCOME_CUISINE_LABELS, WELCOME_DIETARY_LABELS } from '../context/PreferencesContext'
 
 const FOOD_IMG =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCgDZXFJZMNw0KFI01eLkTX5-Kwp4RHrHfgOBIlLrpolUlCadkigFgA_y1fMa_lkOkMSkxTCGY9gWvJ8ExR0cvpJeIMM4zpoqTlTwYvK14IGXju7QQPpwhbCyHjkwqNc32Ei-7p115YwavN1xz4nkqmYiVZdpvEtLSO_kDhl3XSSHnm90rAdPRC9UjroYXRnxyDnwfXpRtSvfNthbMXVYAJVS5XhUYGOIDI64NwjMXi9bXuOHX_mJqRjZcuPE-LzlIxzK1q_Rmqt0MU'
@@ -11,7 +12,22 @@ const AVATARS = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuDBFMPZWjDya7u9wyo9UmK1H5Q7KYFPZmNZsmc_4Q6_k2ViaEvrVi--qHG9pP_NUmBwErrVS8-HzB0aPqP_qnvlujN40VxSpLX7qEnRptbxmp-_iNPZ_7m8je3XwR0Lgc9h718_cKs20hFD02ldoIWqNA6MxjVU_CoAQBKJEBNaQ1n3IBj0oYf1NGtZYkgbqwCPtftRWBYRwtnxqzA1rb-Iacr9KnLVNilJapvS0GJoxAto9uthvdHuA0vBgDe0kNyJPsqrlffe8vtR',
 ]
 
+function dietaryKeyFromLabel(label) {
+  return label.toLowerCase().replace(/\s+/g, '-')
+}
+
 export default function WelcomeOnboarding() {
+  const {
+    welcomeCuisineLabels,
+    budgetAmount,
+    dietaryKeys,
+    toggleWelcomeCuisine,
+    setBudgetAmount,
+    toggleDietary,
+  } = usePreferences()
+
+  const selectedCuisines = new Set(welcomeCuisineLabels)
+
   return (
     <main className="min-h-screen max-w-7xl mx-auto px-6 pt-12 pb-24 lg:pt-20 bg-surface text-on-surface selection:bg-primary-container">
       <header className="mb-16 max-w-3xl">
@@ -27,31 +43,31 @@ export default function WelcomeOnboarding() {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         <section className="md:col-span-8 bg-surface-container-low rounded-[2rem] p-8 relative overflow-hidden group">
-          <div className="absolute -top-12 -right-12 w-48 h-48 bg-secondary-container/20 rounded-full blur-3xl group-hover:bg-secondary-container/40 transition-colors" />
+          <div className="pointer-events-none absolute -top-12 -right-12 w-48 h-48 bg-secondary-container/20 rounded-full blur-3xl group-hover:bg-secondary-container/40 transition-colors" />
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
               <MaterialIcon name="restaurant" className="text-secondary text-3xl" />
               <h2 className="text-2xl font-bold tracking-tight font-headline">Cuisine Preferences</h2>
             </div>
             <div className="flex flex-wrap gap-3">
-              {['Italian', 'Japanese', 'Mexican', 'Indian', 'Mediterranean', 'Thai', 'Korean', 'Vietnamese'].map(
-                (label) => {
-                  const selected = label === 'Italian' || label === 'Mediterranean'
-                  return (
-                    <button
-                      key={label}
-                      type="button"
-                      className={
-                        selected
-                          ? 'px-6 py-3 bg-tertiary-container text-on-tertiary-container font-bold rounded-full transition-transform active:scale-95'
-                          : 'px-6 py-3 bg-surface-container-highest text-on-surface-variant font-medium rounded-full hover:bg-surface-container-high transition-colors'
-                      }
-                    >
-                      {label}
-                    </button>
-                  )
-                },
-              )}
+              {WELCOME_CUISINE_LABELS.map((label) => {
+                const selected = selectedCuisines.has(label)
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleWelcomeCuisine(label)}
+                    className={
+                      selected
+                        ? 'px-6 py-3 bg-tertiary-container text-on-tertiary-container font-bold rounded-full transition-transform active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
+                        : 'px-6 py-3 bg-surface-container-highest text-on-surface-variant font-medium rounded-full hover:bg-surface-container-high transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
+                    }
+                  >
+                    {label}
+                  </button>
+                )
+              })}
             </div>
           </div>
           <div className="mt-12 -mb-8 -mr-8 flex justify-end">
@@ -80,11 +96,16 @@ export default function WelcomeOnboarding() {
                 max={100}
                 min={10}
                 type="range"
-                defaultValue={45}
+                value={budgetAmount}
+                onChange={(e) => setBudgetAmount(Number(e.target.value))}
+                aria-valuemin={10}
+                aria-valuemax={100}
+                aria-valuenow={budgetAmount}
+                aria-label="Per meal budget in dollars"
               />
               <div className="flex justify-between mt-4 font-bold font-headline">
                 <span>$10</span>
-                <span className="text-2xl text-secondary">$45</span>
+                <span className="text-2xl text-secondary">${budgetAmount}</span>
                 <span>$100</span>
               </div>
             </div>
@@ -103,21 +124,26 @@ export default function WelcomeOnboarding() {
                 menu safely.
               </p>
               <div className="grid grid-cols-2 gap-4">
-                {['Vegetarian', 'Vegan', 'Gluten-Free', 'Nut Allergy', 'Dairy-Free', 'Halal'].map((label) => (
-                  <label
-                    key={label}
-                    className="flex items-center gap-3 p-4 bg-surface-container-highest rounded-2xl cursor-pointer hover:bg-surface-container-high transition-colors group"
-                  >
-                    <input
-                      className="w-5 h-5 rounded border-outline text-tertiary focus:ring-tertiary"
-                      type="checkbox"
-                      defaultChecked={label === 'Gluten-Free'}
-                    />
-                    <span className="font-semibold text-on-surface group-hover:text-primary transition-colors">
-                      {label}
-                    </span>
-                  </label>
-                ))}
+                {WELCOME_DIETARY_LABELS.map((label) => {
+                  const key = dietaryKeyFromLabel(label)
+                  const checked = dietaryKeys.includes(key)
+                  return (
+                    <label
+                      key={label}
+                      className="flex items-center gap-3 p-4 bg-surface-container-highest rounded-2xl cursor-pointer hover:bg-surface-container-high transition-colors group"
+                    >
+                      <input
+                        className="w-5 h-5 rounded border-outline text-tertiary focus:ring-tertiary"
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleDietary(key)}
+                      />
+                      <span className="font-semibold text-on-surface group-hover:text-primary transition-colors">
+                        {label}
+                      </span>
+                    </label>
+                  )
+                })}
               </div>
             </div>
             <div className="hidden md:block relative h-full min-h-[300px]">
@@ -151,7 +177,7 @@ export default function WelcomeOnboarding() {
           <p className="text-on-surface-variant font-medium">Join 2,000+ students already dining better.</p>
         </div>
         <Link
-          to="/dining-preferences"
+          to="/discover"
           className="w-full md:w-auto px-12 py-5 bg-primary text-on-primary text-xl font-extrabold rounded-2xl shadow-lg hover:bg-primary-dim transition-all active:scale-95 flex items-center justify-center gap-3 group font-headline"
         >
           Get Started

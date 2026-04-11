@@ -1,29 +1,9 @@
-import { Link, NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { MaterialIcon } from '../components/MaterialIcon'
 
 const PROFILE =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCHfIX5N9uZQ4CL661nKVqWJpPhoZW1V_7uPvvQGmx2QyZmzjbuisR4Vri_QK0x-Ji9qGsLPnpiSuB02-89f-5TL2SzO7lM2ElSJUgRiMiNm74aUYWPUqXJNWQwbvu543_9vLvGyIgQzHykgS6TzzmQKlKNpFIiYYfH8h18nAXInpp_snPO-e16Zz9RylBs2cKRMh2nTB0lt7JndCjnXK_QAuN34rAyJ4wd4h8cDKmZSmDSXF4CEZyS-HXjF4B9vPQXtAo616r7ZRU'
-
-const BUDDIES = [
-  {
-    name: 'Sarah Jenkins',
-    major: 'Philosophy Major',
-    when: 'Available Wednesday, 12:30 PM',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDQlvtA_DUuNi0rsZWJPFCPRucSg9ks5QySIP0eRU-dsfBgnnNcVRwkZ12zOe5vMm6ej2pPYddvQhqV9cbFW8F81KyXYe85BXDvj8C9alCnrn7n8oYxBUZzO6z-JlYGEZ7aU8Tt9lgk23y26za1q35yfEeSAYzkP_xdQNReUauBxXHhdx3QE1JDl5qF2JnDD0MTeoyRpI_aM-7finnTQZBOjWopr8luCbqOdjiZmCLOiodl6HAeEz_X1ZJhsNzkNb-o_KnP1tqmFC8',
-  },
-  {
-    name: 'Marcus Thorne',
-    major: 'Computer Science',
-    when: 'Available Tuesday, 06:00 PM',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBNhq7JhPFK4NkL3WHn-zeOsMnsZ4XYsiCiVOZmFtmqjiNGPHYDsyEkDAQntwS6g2NEk2sw-4TTNEQAxCbz9O38MdLV8jIIbgnxygm-it2e7bT48aCcCv-dYceMI9AnOE6zqBAryDyuG9sryY75qXDGuNtyMIKchk7bM356zkiYOoWim6do_WjoEIRXd1N9ZQddYgkoZmfG9A3XDJkp3r7hPC-7YVWJoIfq9szxewllM6F_482jvDUIbYsIIJYp6iExVRdloIyLVYE',
-  },
-  {
-    name: 'Lila Kim',
-    major: 'Fine Arts',
-    when: 'Available Wednesday, 12:30 PM',
-    img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDe02hOi3pEHTTOUNOPiunwtvDc8CVlpJ1XCGUKtJloZF-mFJqgOYDl1Zij6aLFVwsuLTtlI09KRPR13K6qB8hxBOtqizcQOfSaTqEMYPWmnSmwHCUyhOLRGAVGu559MBKHaF_ToMRm1T1dYf0H-d8KekdmryR8PTnOTYc_f6cEZZiJJE5WQ32WIxrKzQOIPXoycK6OQdmPzzZSEI8PI5mIFAHUpatItwXUsO5rn88sugi5SWtZ7YGG1UKnvpfqDnhTadhWN3T_S_c',
-  },
-]
 
 const DAYS = [
   { label: 'Mon', date: '14', active: false },
@@ -35,26 +15,54 @@ const DAYS = [
   { label: 'Sun', date: '20', active: false },
 ]
 
-const GRID = [
-  {
-    time: '11:30 AM',
-    cells: [null, null, 'lunch', null, null, null, null],
-  },
-  {
-    time: '12:30 PM',
-    cells: ['lunch', null, 'lunch', 'lunch', null, null, null],
-  },
-  {
-    time: '06:00 PM',
-    cells: [null, 'dinner', null, null, null, null, null],
-  },
-  {
-    time: '07:00 PM',
-    cells: [null, null, null, null, 'dinner', null, null],
-  },
+const TIME_ROWS = ['11:30 AM', '12:30 PM', '06:00 PM', '07:00 PM']
+
+const INITIAL_GRID = [
+  [null, null, 'lunch', null, null, null, null],
+  ['lunch', null, 'lunch', 'lunch', null, null, null],
+  [null, 'dinner', null, null, null, null, null],
+  [null, null, null, null, 'dinner', null, null],
 ]
 
+/** 仮データ: 10人以上が登録しているスロット（row, col は TIME_ROWS × DAYS の 0 始まり） */
+const HIGH_DEMAND_KEYS = new Set(['0,1', '0,4', '1,5', '2,3', '3,6'])
+
+function isHighDemandSlot(row, col) {
+  return HIGH_DEMAND_KEYS.has(`${row},${col}`)
+}
+
+function columnHasHighDemand(col) {
+  for (let r = 0; r < TIME_ROWS.length; r += 1) {
+    if (isHighDemandSlot(r, col)) return true
+  }
+  return false
+}
+
 export default function SetAvailability() {
+  const navigate = useNavigate()
+  const [grid, setGrid] = useState(() => INITIAL_GRID.map((row) => [...row]))
+  const [picker, setPicker] = useState(null)
+
+  const closePicker = () => setPicker(null)
+
+  useEffect(() => {
+    if (!picker) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setPicker(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [picker])
+
+  const setCellMeal = (row, col, meal) => {
+    setGrid((prev) => {
+      const next = prev.map((r) => [...r])
+      next[row][col] = meal
+      return next
+    })
+    closePicker()
+  }
+
   return (
     <div className="bg-surface font-body text-on-surface antialiased min-h-screen pb-32">
       <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-sm shadow-blue-900/5">
@@ -141,102 +149,87 @@ export default function SetAvailability() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-3 space-y-6">
-            <div className="bg-surface-container-low p-6 rounded-[2rem]">
-              <h3 className="font-headline font-bold text-lg mb-4 text-primary">Preferences</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-outline mb-2">
-                    Campus Location
-                  </label>
-                  <select className="w-full bg-surface-container-highest border-none rounded-xl px-3 py-2 text-on-surface focus:ring-2 focus:ring-primary/20">
-                    <option>Main Quad Cafeteria</option>
-                    <option>Library Lounge</option>
-                    <option>Science Park Hub</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-outline mb-2">
-                    Match Style
-                  </label>
-                  <div className="grid grid-cols-1 gap-2">
-                    <label className="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-[2rem] cursor-pointer hover:bg-white transition-colors">
-                      <input className="text-secondary focus:ring-secondary" defaultChecked name="style" type="radio" />
-                      <span className="text-sm font-medium">Quick Bite (30m)</span>
-                    </label>
-                    <label className="flex items-center gap-3 p-3 bg-surface-container-lowest rounded-[2rem] cursor-pointer hover:bg-white transition-colors">
-                      <input className="text-secondary focus:ring-secondary" name="style" type="radio" />
-                      <span className="text-sm font-medium">Long Lunch (1h+)</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-tertiary-container/30 p-6 rounded-[2rem]">
-              <div className="flex items-start gap-3">
-                <MaterialIcon name="tips_and_updates" className="text-tertiary" />
-                <div>
-                  <h4 className="font-bold text-tertiary text-sm">Pro Tip</h4>
-                  <p className="text-xs text-on-tertiary-container mt-1 leading-relaxed">
-                    Selecting lunch slots increases match probability by 45%!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-9 bg-surface-container-low p-6 md:p-8 rounded-[2rem] overflow-x-auto no-scrollbar">
-            <div className="min-w-[700px]">
-              <div className="grid grid-cols-8 mb-6 border-b border-outline-variant/10 pb-4">
-                <div className="col-span-1" />
-                {DAYS.map((d) => (
-                  <div key={d.label} className="text-center">
+        <div className="bg-surface-container-low p-6 md:p-10 lg:p-12 rounded-[2rem] overflow-x-auto no-scrollbar w-full">
+          <div className="w-full min-w-[min(100%,42rem)] md:min-w-0 max-w-full mx-auto">
+            <div className="grid grid-cols-8 mb-8 md:mb-10 border-b border-outline-variant/10 pb-6 gap-1">
+              <div className="col-span-1" />
+              {DAYS.map((d, colIndex) => {
+                const colHot = columnHasHighDemand(colIndex)
+                return (
+                  <div key={d.label} className="text-center px-0.5">
                     <span
-                      className={`block text-xs font-bold uppercase tracking-widest mb-1 ${
+                      className={`block text-[10px] md:text-xs font-bold uppercase tracking-widest mb-1 md:mb-2 ${
                         d.active ? 'text-primary' : 'text-outline'
                       }`}
                     >
                       {d.label}
                     </span>
-                    <span className={`text-xl font-bold ${d.active ? 'text-primary' : 'text-on-surface'}`}>
+                    <span
+                      className={`relative inline-flex flex-col items-center gap-1 text-2xl md:text-3xl lg:text-4xl font-bold font-headline ${
+                        d.active ? 'text-primary' : 'text-on-surface'
+                      }`}
+                    >
                       {d.date}
+                      {colHot ? (
+                        <span
+                          className="rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-white md:text-[10px]"
+                          title="This day has a high-demand time slot"
+                        >
+                          Hot
+                        </span>
+                      ) : null}
                     </span>
                   </div>
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                {GRID.map((row) => (
-                  <div key={row.time} className="grid grid-cols-8 items-center group">
-                    <div className="col-span-1 text-right pr-4 text-[10px] font-bold text-outline">{row.time}</div>
-                    {row.cells.map((cell, i) => (
-                      <div key={i} className="p-1">
-                        {cell ? (
-                          <button
-                            type="button"
-                            className="w-full h-14 bg-secondary-container text-secondary flex flex-col items-center justify-center rounded-[2rem] shadow-sm"
-                          >
-                            <MaterialIcon name="check_circle" className="text-[16px]" filled />
-                            <span className="text-[10px] font-bold uppercase">
-                              {cell === 'lunch' ? 'Lunch' : 'Dinner'}
-                            </span>
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="w-full h-14 bg-surface-container-highest rounded-xl hover:bg-primary-container/30 transition-all"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
+                )
+              })}
             </div>
 
-            <div className="mt-12 flex flex-col sm:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-6">
+            <div className="space-y-3 md:space-y-4">
+              {TIME_ROWS.map((time, rowIndex) => (
+                <div key={time} className="grid grid-cols-8 items-center gap-1 md:gap-2">
+                  <div className="col-span-1 text-right pr-2 md:pr-4 text-[10px] md:text-xs font-bold text-outline whitespace-nowrap">
+                    {time}
+                  </div>
+                  {grid[rowIndex].map((cell, colIndex) => {
+                    const highDemand = isHighDemandSlot(rowIndex, colIndex) && !cell
+                    return (
+                      <div key={colIndex} className="p-0.5 md:p-1 min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => setPicker({ row: rowIndex, col: colIndex })}
+                          className={`w-full min-h-[3.25rem] h-16 md:h-20 lg:h-[5.5rem] flex flex-col items-center justify-center gap-0.5 rounded-[1.75rem] md:rounded-[2rem] transition-all shadow-sm ${
+                            cell === 'lunch'
+                              ? 'bg-secondary-container text-secondary ring-0'
+                              : cell === 'dinner'
+                                ? 'bg-blue-900 text-white shadow-blue-900/25 ring-0'
+                                : highDemand
+                                  ? 'bg-amber-100 text-amber-950 ring-2 ring-amber-500/90 shadow-md shadow-amber-500/15 hover:bg-amber-200/90'
+                                  : 'bg-surface-container-highest hover:bg-primary-container/30 ring-0'
+                          }`}
+                        >
+                          {cell ? (
+                            <span className="text-[10px] md:text-xs font-extrabold uppercase tracking-wide">
+                              {cell === 'lunch' ? 'Lunch' : 'Dinner'}
+                            </span>
+                          ) : highDemand ? (
+                            <>
+                              <MaterialIcon name="groups" className="text-lg text-amber-800 md:text-xl" />
+                              <span className="text-[9px] md:text-[10px] font-extrabold uppercase tracking-wide text-amber-950">
+                                10+ joined
+                              </span>
+                            </>
+                          ) : null}
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-12 md:mt-14 flex flex-col sm:flex-row justify-between items-center gap-6">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-surface-container-highest rounded-sm" />
                   <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
@@ -244,55 +237,81 @@ export default function SetAvailability() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded-sm bg-amber-100 ring-2 ring-amber-500/90" />
+                  <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">10+ joined</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-secondary-container rounded-sm" />
-                  <span className="text-xs font-bold text-secondary uppercase tracking-wider">Your Selection</span>
+                  <span className="text-xs font-bold text-secondary uppercase tracking-wider">Lunch</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-900 rounded-sm" />
+                  <span className="text-xs font-bold text-blue-900 uppercase tracking-wider">Dinner</span>
                 </div>
               </div>
               <button
                 type="button"
+                onClick={() => navigate('/matches')}
                 className="bg-primary hover:bg-primary-dim text-on-primary font-headline font-bold px-10 py-4 rounded-2xl transition-all shadow-lg shadow-primary/20 flex items-center gap-3 active:scale-95"
               >
                 <span>Submit Availability</span>
                 <MaterialIcon name="arrow_forward" />
               </button>
-            </div>
           </div>
         </div>
 
-        <div className="mt-20">
-          <h2 className="font-headline font-extrabold text-2xl mb-8 flex items-center gap-3">
-            <MaterialIcon name="volunteer_activism" className="text-tertiary" />
-            Popular times with your buddies
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {BUDDIES.map((b) => (
-              <div
-                key={b.name}
-                className="bg-surface-container-low p-6 rounded-[2rem] group hover:bg-white transition-all"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <img alt="" className="w-full h-full object-cover" src={b.img} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-on-surface">{b.name}</h4>
-                    <p className="text-xs text-outline font-medium">{b.major}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <MaterialIcon name="event_available" className="text-[16px] text-tertiary" />
-                  <span className="text-xs font-semibold">{b.when}</span>
-                </div>
+        {picker ? (
+          <div
+            role="presentation"
+            className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-4"
+            onClick={closePicker}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="meal-picker-title"
+              className="w-full max-w-sm bg-surface-container-lowest rounded-[2rem] p-6 shadow-2xl border border-outline-variant/20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 id="meal-picker-title" className="font-headline font-bold text-lg text-on-surface mb-1">
+                Choose meal type
+              </h3>
+              <p className="text-sm text-on-surface-variant mb-6">
+                {DAYS[picker.col].label} {DAYS[picker.col].date} · {TIME_ROWS[picker.row]}
+              </p>
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <button
                   type="button"
-                  className="mt-4 w-full py-2 bg-tertiary-container text-on-tertiary-container rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setCellMeal(picker.row, picker.col, 'lunch')}
+                  className="py-4 rounded-2xl font-headline font-bold text-sm uppercase bg-secondary-container text-secondary hover:opacity-90 transition-opacity"
                 >
-                  Match Now
+                  Lunch
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCellMeal(picker.row, picker.col, 'dinner')}
+                  className="py-4 rounded-2xl font-headline font-bold text-sm uppercase bg-blue-900 text-white hover:bg-blue-950 transition-colors"
+                >
+                  Dinner
                 </button>
               </div>
-            ))}
+              <button
+                type="button"
+                onClick={() => setCellMeal(picker.row, picker.col, null)}
+                className="w-full py-3 rounded-xl text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors"
+              >
+                Clear slot
+              </button>
+              <button
+                type="button"
+                onClick={closePicker}
+                className="w-full mt-2 py-2 text-sm font-medium text-outline hover:text-on-surface"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
+        ) : null}
       </main>
 
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg shadow-[0_-8px_24px_rgba(31,45,81,0.08)] rounded-t-[2.5rem] z-50 flex justify-around items-center px-4 pb-6 pt-3">

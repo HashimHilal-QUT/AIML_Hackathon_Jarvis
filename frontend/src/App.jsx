@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { PreferencesProvider } from './context/PreferencesContext'
 import WelcomeOnboarding from './pages/WelcomeOnboarding'
 import DiningPreferences from './pages/DiningPreferences'
 import Discover from './pages/Discover'
@@ -8,6 +9,7 @@ import SetAvailability from './pages/SetAvailability'
 export default function App() {
   return (
     <BrowserRouter>
+      <PreferencesProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/welcome" replace />} />
         <Route path="/welcome" element={<WelcomeOnboarding />} />
@@ -17,6 +19,7 @@ export default function App() {
         <Route path="/availability" element={<SetAvailability />} />
         <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Routes>
+      </PreferencesProvider>
     </BrowserRouter>
   )
 }
