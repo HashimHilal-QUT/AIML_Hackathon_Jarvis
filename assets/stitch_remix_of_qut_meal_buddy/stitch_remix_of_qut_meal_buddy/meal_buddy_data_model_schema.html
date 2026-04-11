@@ -36,6 +36,9 @@ Stores data for campus-based eateries.
 | `location` | VARCHAR(255) | | e.g., "South Bank, CBD, Kelvin Grove". |
 | `cuisine_type` | VARCHAR(100) | | Italian, Japanese, Korean, Mexican, Indian, Thai, Vietnamese, etc. |
 | `budget_level` | INT | (1-3) | $ 10 to $$$ 100. |
+| `location` | VARCHAR(255) | | e.g., "Level 4, Science Precinct". |
+| `cuisine_type` | VARCHAR(100) | | Primary cuisine (Asian, Western, etc.). |
+| `budget_level` | INT | (1-3) | $ (Budget) to $$$ (Premium). |
 | `avg_rating` | DECIMAL(2,1) | | Calculated from user feedback. |
 | `image_url` | TEXT | | Featured image for the dashboard. |
 
@@ -47,6 +50,9 @@ Maps users to their dining tastes and dietary requirements.
 | `preferred_cuisines`| JSONB | | Array of preferred cuisine types. e.g., ['Italian', 'Japanese', 'Korean']. |
 | `budget_per_meal` | INT | | User's preferred spending limit ($10-$100). |
 | `dietary_reqs` | JSONB | | Array: ['Vegetarian', 'Gluten-Free', 'Vegan', 'Halal', 'Dairy-Free', 'Nut Allergy', 'Low Carb', etc.]. |
+| `preferred_cuisines`| JSONB | | Array of preferred cuisine types. |
+| `budget_per_meal` | INT | | User's preferred spending limit ($10-$100). |
+| `dietary_reqs` | JSONB | | Array: ['Vegetarian', 'Gluten-Free', etc.]. |
 | `updated_at` | TIMESTAMP | | Last time preferences were modified. |
 
 ### `user_availability`
