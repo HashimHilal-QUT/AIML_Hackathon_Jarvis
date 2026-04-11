@@ -260,6 +260,154 @@ Users can select a genre, mood, story length, voice gender, and voice speed to e
 
 ---
 
+# 🍽️ Meal Buddy (QUT Edition)
+
+## 📌 Overview
+Meal Buddy is a campus-based social dining application designed for members of Queensland University of Technology (QUT), including students and staff.
+
+The application helps users discover restaurants, receive personalized recommendations, and find dining companions within the QUT community.
+
+---
+
+## 🎯 Purpose
+- Reduce decision fatigue when choosing where to eat  
+- Provide personalized restaurant recommendations  
+- Help QUT users find dining companions  
+- Create a social and engaging dining experience  
+
+---
+
+## 👥 Target Users
+- QUT students who do not want to eat alone  
+- QUT staff looking for casual social interactions  
+- International students seeking social connections  
+- Users within the QUT community looking for convenient dining options  
+
+---
+
+## ⚙️ Functional Requirements
+
+### 1. Weekly Trending Restaurant Ranking
+**Purpose**  
+Help users quickly discover popular dining options  
+
+**Input**  
+- User selections  
+- Activity data  
+
+**Output**  
+- Ranked list of trending restaurants  
+
+---
+
+### 2. User Preference Collection
+**Purpose**  
+Understand user dining preferences  
+
+**Example Options**
+- Cuisine type (e.g. Asian, Western, Fast Food)  
+- Budget range  
+- Dietary requirements  
+
+**Input Method**
+- Form input  
+- Selectable options  
+
+**Effect**
+- Improves recommendation accuracy  
+
+---
+
+### 3. Personalized Restaurant Recommendation
+**Purpose**  
+Suggest restaurants based on user preferences  
+
+**Input**
+- User preferences  
+
+**Output**
+- Recommended restaurant list  
+
+---
+
+### 4. Restaurant Selection
+**Purpose**  
+Allow users to indicate interest in restaurants  
+
+**Constraints**
+- Users can select up to **3 restaurants per week**  
+
+**Effect**
+- Used for matching process  
+
+---
+
+### 5. Availability Selection
+**Purpose**  
+Collect users' available dining times  
+
+**Input Method**
+- Time slot selection  
+
+**Effect**
+- Used for matching users  
+
+---
+
+### 6. Smart User Matching
+**Purpose**  
+Connect users for shared meals  
+
+**Input**
+- Selected restaurants  
+- Availability  
+
+**Process**
+The system matches users who:
+- Selected the same restaurant  
+- Have overlapping time availability  
+
+**Output**
+- Matched users or groups  
+
+---
+
+### 7. Match Notification
+**Purpose**  
+Notify users when a match is found  
+
+**Output**
+- Restaurant details  
+- Time  
+
+---
+
+### 8. Match Confirmation
+**Purpose**  
+Allow users to accept or decline matches  
+
+**Actions**
+- Accept  
+- Decline  
+
+---
+
+### 9. Feedback
+**Purpose**  
+Collect user feedback after the experience  
+
+**Example Options**
+- Like  
+- Dislike  
+- Rating  
+
+---
+
+## 🚀 Future Improvements
+- Cancellation / no-show handling  
+- In-app chat before meetup  
+- Trust and rating system  
+
 ## 4. Functional Requirements
 
 ### 4.1 Genre Selection
