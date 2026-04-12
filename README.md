@@ -224,7 +224,7 @@ git stash pop
 | Heiu Nguyen | `AI Engineer` |
 | Karol Bhandari | `AI Engineer` |
 | Kris Hsu | `Design Engineer` |
-| Tokuhashi Sakeshimi  | `Full Stack Developer` |
+| Toku Sakesmi  | `Full Stack Developer` |
 
 ---
 
