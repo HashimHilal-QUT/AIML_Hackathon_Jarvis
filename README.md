@@ -228,6 +228,6 @@ git stash pop
 
 ---
 
-*Last updated by repo owner. For questions, raise a GitHub Issue or message the team.*
+*Last updated by repo owner Hashim. For questions, raise a GitHub Issue or message the team.*
 
 
