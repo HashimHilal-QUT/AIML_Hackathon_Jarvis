@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.A.R.V.I.S — AIML Hackathon 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#00c8ff;--blue-dim:#0099bb;--blue-glow:rgba(0,200,255,0.35);
+  --gold:#f5a623;--bg:#020d1a;
+  --font-hud:'Orbitron','Courier New',monospace;
+  --font-body:'Rajdhani','Courier New',monospace;
+}
+body{background:var(--bg);color:var(--blue);font-family:var(--font-body);height:100vh;width:100vw;overflow:hidden;}
+#bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;}
+
+.hud-btn{font-family:var(--font-hud);font-size:10px;letter-spacing:2px;padding:9px 22px;background:transparent;border:1px solid rgba(0,200,255,0.5);color:var(--blue);cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+.hud-btn:hover{background:rgba(0,200,255,0.1);box-shadow:0 0 12px var(--blue-glow);}
+.hud-btn:disabled{opacity:0.3;cursor:default;}
+.hud-btn.lit{background:rgba(0,200,255,0.18);border-color:var(--blue);box-shadow:0 0 14px var(--blue-glow);}
+
+/* Corners */
+.corner{position:fixed;width:36px;height:36px;z-index:10;}
+.corner::before,.corner::after{content:'';position:absolute;background:var(--blue);opacity:0.6;}
+.corner::before{width:2px;height:100%;}
+.corner::after{width:100%;height:2px;}
+.corner.tl{top:14px;left:14px;}
+.corner.tr{top:14px;right:14px;transform:scaleX(-1);}
+.corner.bl{bottom:14px;left:14px;transform:scaleY(-1);}
+.corner.br{bottom:14px;right:14px;transform:scale(-1);}
+
+/* HUD bars */
+#topbar{position:fixed;top:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;border-bottom:1px solid rgba(0,200,255,0.15);background:rgba(2,13,26,0.93);z-index:50;font-family:var(--font-hud);font-size:9px;letter-spacing:2px;color:rgba(0,200,255,0.5);}
+#topbar .title{color:var(--blue);font-size:12px;font-weight:700;letter-spacing:4px;}
+#bottombar{position:fixed;bottom:0;left:0;right:0;height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;border-top:1px solid rgba(0,200,255,0.15);background:rgba(2,13,26,0.93);z-index:50;font-family:var(--font-hud);font-size:9px;letter-spacing:2px;color:rgba(0,200,255,0.45);}
+
+/* Main layout */
+#main{position:fixed;inset:44px 0 42px 0;display:flex;align-items:center;justify-content:center;z-index:10;}
+
+/* SVG panel */
+#svg-panel{width:420px;min-width:420px;display:flex;align-items:center;justify-content:center;position:relative;flex-direction:column;}
+#svg-panel svg{width:380px;height:380px;filter:drop-shadow(0 0 20px rgba(0,200,255,0.25));transition:filter 0.4s;}
+#svg-panel.speaking svg{filter:drop-shadow(0 0 40px rgba(0,200,255,0.6)) drop-shadow(0 0 80px rgba(0,200,255,0.2));}
+#voice-canvas{width:280px;height:56px;margin-top:-10px;}
+
+/* Slide panel */
+#slide-panel{flex:1;max-width:580px;padding:0 48px 0 24px;}
+@keyframes sIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.s-anim{animation:sIn 0.45s ease;}
+.snum{font-family:var(--font-hud);font-size:9px;letter-spacing:3px;color:rgba(0,200,255,0.4);margin-bottom:14px;}
+.snum span{color:var(--blue);}
+.stitle{font-family:var(--font-hud);font-size:clamp(18px,2.3vw,30px);font-weight:900;line-height:1.1;color:#fff;margin-bottom:6px;text-shadow:0 0 24px rgba(0,200,255,0.35);}
+.stitle .ac{color:var(--blue);}
+.ssub{font-family:var(--font-hud);font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:20px;text-transform:uppercase;}
+.sbody{font-size:15.5px;font-weight:300;line-height:1.8;color:rgba(0,200,255,0.8);border-left:2px solid rgba(0,200,255,0.22);padding-left:16px;}
+.sbody strong{color:var(--blue);font-weight:600;}
+.sbody em{color:var(--gold);font-style:normal;}
+.stats{display:flex;gap:16px;margin-top:18px;flex-wrap:wrap;}
+.stat{border:1px solid rgba(0,200,255,0.2);background:rgba(0,200,255,0.04);padding:9px 15px;border-radius:2px;}
+.sv{font-family:var(--font-hud);font-size:20px;font-weight:700;color:var(--blue);}
+.sl{font-size:10px;letter-spacing:1px;color:rgba(0,200,255,0.5);margin-top:2px;}
+
+/* Transcript */
+#transcript{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);width:70%;max-width:600px;text-align:center;color:var(--blue);font-size:12px;letter-spacing:1px;line-height:1.8;opacity:0;transition:opacity 0.4s;z-index:30;min-height:36px;font-family:'Courier New',monospace;}
+
+/* Progress dots */
+#dots{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:50;}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(0,200,255,0.22);border:1px solid rgba(0,200,255,0.4);cursor:pointer;transition:all 0.3s;}
+.dot.active{background:var(--blue);box-shadow:0 0 8px var(--blue-glow);transform:scale(1.5);}
+
+/* SVG speaking state */
+.hc{position:fixed;font-family:'Courier New',monospace;font-size:9px;letter-spacing:1.5px;line-height:1.9;color:rgba(0,200,255,0.38);z-index:20;}
+#htl{top:52px;left:18px;}
+#htr{top:52px;right:18px;text-align:right;}
+#hbl{bottom:48px;left:18px;}
+#hbr{bottom:48px;right:18px;text-align:right;}
+
+/* ── WAKE SCREEN ── */
+#wake-screen{
+  position:fixed;inset:0;background:#020d1a;z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  transition:opacity 1.2s ease;
+}
+#wake-screen.fade-out{opacity:0;pointer-events:none;}
+#wake-title{
+  font-family:var(--font-hud);font-size:clamp(28px,4vw,56px);font-weight:900;
+  color:#fff;letter-spacing:8px;text-align:center;
+  text-shadow:0 0 40px rgba(0,200,255,0.6),0 0 80px rgba(0,200,255,0.2);
+  animation:wakePulse 2s ease-in-out infinite;
+}
+@keyframes wakePulse{0%,100%{opacity:0.85}50%{opacity:1}}
+#wake-sub{font-family:var(--font-hud);font-size:13px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;}
+#wake-status{font-family:'Courier New',monospace;font-size:11px;letter-spacing:2px;color:rgba(0,200,255,0.6);min-height:20px;text-align:center;}
+#wake-status.blink{animation:statusBlink 1.2s ease-in-out infinite;}
+@keyframes statusBlink{0%,100%{opacity:1}50%{opacity:0.2}}
+#wake-bar-wrap{width:320px;height:2px;background:rgba(0,200,255,0.15);border-radius:1px;overflow:hidden;}
+#wake-bar{height:100%;width:0%;background:var(--blue);box-shadow:0 0 8px var(--blue-glow);transition:width 0.4s ease;border-radius:1px;}
+#wake-canvas{width:320px;height:60px;}
+
+/* SVG speaking state */
+.jarvis-speaking #ring-outer{animation-duration:4s!important;}
+.jarvis-speaking #ring-inner-dash{animation-duration:2.5s!important;}
+.jarvis-speaking #gold-sweep circle{animation-duration:1.8s!important;}
+.jarvis-speaking #speak-ring{stroke-opacity:0.7!important;stroke-dasharray:80 1300!important;animation:spinCW 1.2s linear infinite,spk 0.7s ease-in-out infinite!important;}
+@keyframes spk{0%,100%{stroke-opacity:0.4}50%{stroke-opacity:1}}
+
+/* Team slide */
+#slide-panel.team-slide .sbody{border-left:none;padding-left:0;}
+.team-grid{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.team-card-frame{display:flex;flex-direction:column;align-items:center;gap:8px;width:100px;}
+.team-photo-wrap{position:relative;width:90px;height:90px;}
+.team-photo-wrap img{width:90px;height:90px;object-fit:cover;object-position:top;border-radius:4px;filter:grayscale(20%) contrast(1.1);}
+.team-photo-wrap::before{content:'';position:absolute;inset:0;border:1px solid var(--blue);border-radius:4px;pointer-events:none;box-shadow:0 0 10px var(--blue-glow),inset 0 0 10px rgba(0,200,255,0.05);}
+.team-photo-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);animation:scanLine 2s linear infinite;}
+@keyframes scanLine{0%{top:0;opacity:1}100%{top:100%;opacity:0}}
+.team-corner{position:absolute;width:8px;height:8px;}
+.team-corner.tl{top:-1px;left:-1px;border-top:2px solid var(--gold);border-left:2px solid var(--gold);}
+.team-corner.tr{top:-1px;right:-1px;border-top:2px solid var(--gold);border-right:2px solid var(--gold);}
+.team-corner.bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold);}
+.team-corner.br{bottom:-1px;right:-1px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold);}
+.team-name{font-family:var(--font-hud);font-size:9px;letter-spacing:1px;color:#fff;text-align:center;}
+.team-role{font-size:9px;letter-spacing:0.5px;color:rgba(0,200,255,0.55);text-align:center;}
+.team-id{font-family:'Courier New',monospace;font-size:8px;color:var(--gold);opacity:0.7;text-align:center;}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- Corners -->
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<!-- HUD bars -->
+<div id="topbar">
+  <div class="title">J.A.R.V.I.S</div>
+  <div>AIML HACKATHON 2026 &nbsp;///&nbsp; QUT TEAM : HEY JARVIS!</div>
+  <div id="clock">--:--:--</div>
+</div>
+<div id="bottombar">
+  <div>SYSTEM ONLINE &nbsp;///&nbsp; AZURE VM: 20.5.152.253</div>
+  <div id="bstatus">STANDBY</div>
+</div>
+
+<!-- HUD corner text -->
+<div class="hc" id="htl">SYS.CORE: ACTIVE<br>NEURAL.NET: 99.2%<br>UPTIME: 00:00:00</div>
+<div class="hc" id="htr">MODE: PASSIVE<br>THREAT: NONE<br>SUIT: STANDBY</div>
+<div class="hc" id="hbl">PWR: ████████ 94%<br>TEMP: 36.4°C</div>
+<div class="hc" id="hbr">STARK.TECH v7.3<br>AI.CORE: READY</div>
+
+<!-- Transcript -->
+<div id="transcript"></div>
+
+<!-- Dots -->
+<div id="dots"></div>
+
+<!-- Wake Screen -->
+<div id="wake-screen">
+  <canvas id="wake-canvas" width="320" height="60"></canvas>
+  <div id="wake-title">J.A.R.V.I.S</div>
+  <div id="wake-sub">Waking Up System</div>
+  <div id="wake-bar-wrap"><div id="wake-bar"></div></div>
+  <div id="wake-status">INITIALISING NEURAL CORE...</div>
+</div>
+
+<!-- Main -->
+<div id="main">
+  <!-- JARVIS SVG -->
+  <div id="svg-panel">
+    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bgG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#0a1a2e"/><stop offset="100%" stop-color="#020d1a"/></radialGradient>
+        <radialGradient id="glG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00c8ff" stop-opacity="0.15"/><stop offset="100%" stop-color="#00c8ff" stop-opacity="0"/></radialGradient>
+        <linearGradient id="ggG" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f5a623" stop-opacity="0"/><stop offset="30%" stop-color="#f5a623"/><stop offset="70%" stop-color="#ffd700"/><stop offset="100%" stop-color="#f5a623" stop-opacity="0"/></linearGradient>
+        <pattern id="pgrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0L0 0 0 20" fill="none" stroke="#00c8ff" stroke-width="0.2" stroke-opacity="0.15"/></pattern>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="tglow" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <pattern id="circ" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="none"/><path d="M10 0L10 10L20 10M30 0L30 15L20 15L20 10M0 25L15 25L15 30L25 30L25 20M40 20L30 20" fill="none" stroke="#00c8ff" stroke-width="0.4" stroke-opacity="0.2"/><circle cx="10" cy="10" r="1" fill="#00c8ff" fill-opacity="0.3"/><circle cx="25" cy="30" r="1" fill="#00c8ff" fill-opacity="0.3"/></pattern>
+        <radialGradient id="cglow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00c8ff" stop-opacity="0.08"/><stop offset="100%" stop-color="#00c8ff" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="500" height="500" fill="url(#bgG)"/>
+      <rect width="500" height="500" fill="url(#pgrid)"/>
+      <!-- Schematic corners -->
+      <g opacity="0.22" stroke="#00c8ff" stroke-width="0.5" fill="none">
+        <rect x="20" y="20" width="80" height="50" rx="2"/><line x1="20" y1="35" x2="100" y2="35"/><line x1="60" y1="35" x2="60" y2="70"/>
+        <rect x="30" y="40" width="20" height="20" rx="1"/><rect x="65" y="40" width="20" height="20" rx="1"/>
+      </g>
+      <g opacity="0.18" stroke="#00c8ff" stroke-width="0.5" fill="none">
+        <rect x="380" y="15" width="100" height="60" rx="2"/><line x1="380" y1="30" x2="480" y2="30"/><line x1="430" y1="15" x2="430" y2="75"/>
+        <circle cx="410" cy="50" r="8"/><circle cx="450" cy="50" r="5"/>
+      </g>
+      <g opacity="0.18" stroke="#00c8ff" stroke-width="0.5" fill="none">
+        <rect x="390" y="400" width="90" height="75" rx="2"/><line x1="390" y1="420" x2="480" y2="420"/>
+        <rect x="400" y="430" width="30" height="30"/><circle cx="460" cy="445" r="12"/>
+      </g>
+      <g opacity="0.18" stroke="#00c8ff" stroke-width="0.5" fill="none">
+        <rect x="15" y="390" width="85" height="80" rx="2"/><line x1="15" y1="415" x2="100" y2="415"/>
+        <path d="M30 430L55 430L55 455L80 455"/><circle cx="30" cy="445" r="6"/>
+      </g>
+      <!-- Glow + outer rings -->
+      <circle cx="250" cy="250" r="220" fill="url(#glG)"/>
+      <circle cx="250" cy="250" r="218" fill="none" stroke="#00c8ff" stroke-width="0.5" stroke-opacity="0.3"/>
+      <circle cx="250" cy="250" r="205" fill="none" stroke="#00c8ff" stroke-width="1.5" stroke-opacity="0.6" filter="url(#glow)"/>
+      <!-- Tick marks (simplified) -->
+      <g id="outerTicks" stroke="#00c8ff" stroke-opacity="0.7" filter="url(#glow)">
+        <g transform="rotate(0,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(30,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(60,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(90,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(120,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(150,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(180,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(210,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(240,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(270,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(300,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(330,250,250)"><line x1="250" y1="42" x2="250" y2="55" stroke-width="1.5"/></g>
+        <g transform="rotate(15,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(45,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(75,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(105,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(135,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(165,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(195,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(225,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(255,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(285,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(315,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+        <g transform="rotate(345,250,250)"><line x1="250" y1="45" x2="250" y2="52" stroke-width="0.6"/></g>
+      </g>
+      <!-- Outer band -->
+      <circle cx="250" cy="250" r="197" fill="none" stroke="#051525" stroke-width="28"/>
+      <circle cx="250" cy="250" r="197" fill="none" stroke="#00c8ff" stroke-width="0.8" stroke-opacity="0.9" filter="url(#glow)"/>
+      <circle cx="250" cy="250" r="183" fill="none" stroke="#00c8ff" stroke-width="0.8" stroke-opacity="0.7" filter="url(#glow)"/>
+      <!-- Cardinal dots -->
+      <g fill="#00c8ff" filter="url(#glow)" opacity="0.9">
+        <circle cx="250" cy="53" r="2.5"/><circle cx="250" cy="53" r="2.5" transform="rotate(90,250,250)"/>
+        <circle cx="250" cy="53" r="2.5" transform="rotate(180,250,250)"/><circle cx="250" cy="53" r="2.5" transform="rotate(270,250,250)"/>
+        <circle cx="250" cy="53" r="1.5" transform="rotate(45,250,250)"/><circle cx="250" cy="53" r="1.5" transform="rotate(135,250,250)"/>
+        <circle cx="250" cy="53" r="1.5" transform="rotate(225,250,250)"/><circle cx="250" cy="53" r="1.5" transform="rotate(315,250,250)"/>
+      </g>
+      <!-- Gold arc -->
+      <path d="M188 100A197 197 0 0 1 113 380" fill="none" stroke="url(#ggG)" stroke-width="4" stroke-linecap="round" opacity="0.9" filter="url(#glow)"/>
+      <!-- Inner rings -->
+      <circle cx="250" cy="250" r="168" fill="none" stroke="#00c8ff" stroke-width="0.6" stroke-opacity="0.5"/>
+      <circle cx="250" cy="250" r="155" fill="none" stroke="#051525" stroke-width="16"/>
+      <circle cx="250" cy="250" r="163" fill="none" stroke="#00c8ff" stroke-width="0.5" stroke-opacity="0.4"/>
+      <circle cx="250" cy="250" r="147" fill="none" stroke="#00c8ff" stroke-width="0.5" stroke-opacity="0.4"/>
+      <!-- Core -->
+      <circle cx="250" cy="250" r="140" fill="#020d1a" fill-opacity="0.92"/>
+      <circle cx="250" cy="250" r="140" fill="url(#circ)" fill-opacity="0.4"/>
+      <circle cx="250" cy="250" r="138" fill="none" stroke="#00c8ff" stroke-width="0.8" stroke-opacity="0.6" filter="url(#glow)"/>
+      <circle cx="250" cy="250" r="130" fill="none" stroke="#00c8ff" stroke-width="0.4" stroke-opacity="0.3"/>
+      <!-- HUD connectors -->
+      <g stroke="#00c8ff" stroke-width="0.8" stroke-opacity="0.6" filter="url(#glow)">
+        <line x1="250" y1="112" x2="250" y2="125"/><line x1="245" y1="112" x2="255" y2="112"/>
+        <line x1="250" y1="388" x2="250" y2="375"/><line x1="245" y1="388" x2="255" y2="388"/>
+        <line x1="112" y1="250" x2="125" y2="250"/><line x1="112" y1="245" x2="112" y2="255"/>
+        <line x1="388" y1="250" x2="375" y2="250"/><line x1="388" y1="245" x2="388" y2="255"/>
+      </g>
+      <circle cx="250" cy="250" r="115" fill="none" stroke="#00c8ff" stroke-width="0.6" stroke-opacity="0.35" stroke-dasharray="8 4"/>
+      <circle cx="250" cy="250" r="100" fill="none" stroke="#00c8ff" stroke-width="0.5" stroke-opacity="0.4"/>
+      <circle cx="250" cy="250" r="90" fill="url(#cglow)"/>
+      <!-- JARVIS text -->
+      <text x="250" y="258" text-anchor="middle" dominant-baseline="middle" font-family="'Courier New',monospace" font-size="30" font-weight="700" letter-spacing="6" fill="#ffffff" filter="url(#tglow)">J.A.R.V.I.S.</text>
+      <line x1="155" y1="236" x2="345" y2="236" stroke="#00c8ff" stroke-width="0.6" stroke-opacity="0.5"/>
+      <line x1="175" y1="270" x2="325" y2="270" stroke="#00c8ff" stroke-width="0.4" stroke-opacity="0.35"/>
+      <g font-family="'Courier New',monospace" fill="#00c8ff" font-size="7" letter-spacing="1" opacity="0.6">
+        <text x="250" y="200" text-anchor="middle">SYS.ONLINE</text>
+        <text x="250" y="308" text-anchor="middle">v7.3.2 // ACTIVE</text>
+        <text x="178" y="253" text-anchor="middle" transform="rotate(-90,178,253)">AI.CORE</text>
+        <text x="322" y="253" text-anchor="middle" transform="rotate(90,322,253)">STARK.TECH</text>
+      </g>
+      <g fill="#00c8ff" opacity="0.7">
+        <circle cx="250" cy="215" r="1.5"/><circle cx="250" cy="285" r="1.5"/>
+        <circle cx="215" cy="250" r="1.5"/><circle cx="285" cy="250" r="1.5"/>
+      </g>
+      <!-- Animated rings -->
+      <circle id="ring-outer" cx="250" cy="250" r="197" fill="none" stroke="#00c8ff" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="20 300"/>
+      <circle id="ring-inner-dash" cx="250" cy="250" r="115" fill="none" stroke="#00c8ff" stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="5 8"/>
+      <g id="gold-sweep"><circle cx="250" cy="250" r="190" fill="none" stroke="#f5a623" stroke-width="3" stroke-opacity="0.7" stroke-dasharray="30 500"/></g>
+      <!-- Speaking ring -->
+      <circle id="speak-ring" cx="250" cy="250" r="210" fill="none" stroke="#00c8ff" stroke-width="2.5" stroke-opacity="0" stroke-dasharray="0 1400"/>
+      <style>
+        #ring-outer{transform-origin:250px 250px;animation:spinCW 20s linear infinite;}
+        #ring-inner-dash{transform-origin:250px 250px;animation:spinCCW 15s linear infinite;}
+        #gold-sweep circle{transform-origin:250px 250px;animation:spinCW 8s linear infinite;}
+        #outerTicks{transform-origin:250px 250px;animation:spinCW 60s linear infinite;}
+        text{animation:tPulse 3s ease-in-out infinite;}
+        @keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        @keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+        @keyframes tPulse{0%,100%{opacity:1}50%{opacity:0.8}}
+      
+/* Team slide */
+#slide-panel.team-slide .sbody{border-left:none;padding-left:0;}
+.team-grid{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.team-card-frame{display:flex;flex-direction:column;align-items:center;gap:8px;width:100px;}
+.team-photo-wrap{position:relative;width:90px;height:90px;}
+.team-photo-wrap img{width:90px;height:90px;object-fit:cover;object-position:top;border-radius:4px;filter:grayscale(20%) contrast(1.1);}
+.team-photo-wrap::before{content:'';position:absolute;inset:0;border:1px solid var(--blue);border-radius:4px;pointer-events:none;box-shadow:0 0 10px var(--blue-glow),inset 0 0 10px rgba(0,200,255,0.05);}
+.team-photo-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);animation:scanLine 2s linear infinite;}
+@keyframes scanLine{0%{top:0;opacity:1}100%{top:100%;opacity:0}}
+.team-corner{position:absolute;width:8px;height:8px;}
+.team-corner.tl{top:-1px;left:-1px;border-top:2px solid var(--gold);border-left:2px solid var(--gold);}
+.team-corner.tr{top:-1px;right:-1px;border-top:2px solid var(--gold);border-right:2px solid var(--gold);}
+.team-corner.bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold);}
+.team-corner.br{bottom:-1px;right:-1px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold);}
+.team-name{font-family:var(--font-hud);font-size:9px;letter-spacing:1px;color:#fff;text-align:center;}
+.team-role{font-size:9px;letter-spacing:0.5px;color:rgba(0,200,255,0.55);text-align:center;}
+.team-id{font-family:'Courier New',monospace;font-size:8px;color:var(--gold);opacity:0.7;text-align:center;}
+</style>
+    </svg>
+    <canvas id="voice-canvas" width="280" height="56"></canvas>
+  </div>
+
+  <!-- Slide content -->
+  <div id="slide-panel">
+    <div class="snum">SLIDE <span id="snum">01</span> / <span id="stot">08</span></div>
+    <div class="stitle" id="stitle"></div>
+    <div class="ssub"   id="ssub"></div>
+    <div class="sbody"  id="sbody"></div>
+    <div class="stats"  id="sstats"></div>
+  </div>
+</div>
+
+<script>
+// ── SLIDES ──────────────────────────────────────────────────────────────────
+const SLIDES=[
+  {title:"Meet <span class='ac'>J.A.R.V.I.S</span>",sub:"Just A Rather Very Intelligent System",
+   body:`An <strong>Agentic AI assistant</strong> built for QUT students. JARVIS knows your timetable, tracks your assignments, reminds you before deadlines, and helps you unwind — all powered by the latest large language models, deployed on Azure, and personalised to <em>you</em>.`,
+   stats:[],
+   n:"Welcome. I am JARVIS — Just A Rather Very Intelligent System. Built by Team Hey Jarvis for the AIML Hackathon 2026 at QUT. I am your intelligent university companion, designed to help you study smarter, never miss a deadline, and rest well."},
+  {title:"The <span class='ac'>Problem</span>",sub:"What QUT Students Face Every Day",
+   body:`University students are <strong>overwhelmed</strong>. Assignments scattered across Canvas, timetables in one app, reminders in another — and no single intelligent system that knows <strong>who you are</strong> and what you need right now.`,
+   stats:[{v:"67%",l:"Miss Deadlines"},{v:"3+",l:"Apps Daily"},{v:"0",l:"Personalised AI"}],
+   n:"Here is the problem we are solving. QUT students are overwhelmed. Sixty seven percent miss at least one assignment deadline per semester. They juggle three or more apps every day — Canvas, MyTimetable, Outlook, Teams, Zoom — and have zero personalised AI assistance that understands their individual schedule and needs."},
+  {title:"Our <span class='ac'>Solution</span>",sub:"One Intelligent Agent for Everything",
+   body:`JARVIS is a single <strong>conversational AI agent</strong> that connects your Canvas assignments, QUT timetable, and personal profile into one intelligent system. Ask it anything — it already knows your schedule, your subjects, and your deadlines.`,
+   stats:[],
+   n:"Our solution is JARVIS — a single conversational AI agent that connects to your Canvas assignment feed, your QUT timetable, and your personal student profile stored securely in Supabase. Ask it anything. It already knows who you are, what you are studying, and what is due next.It also uses AI to connect you with like minded people"},
+  {title:"<span class='ac'>Key</span> Features",sub:"Four Pillars of JARVIS",
+   body:`<strong>Scheduling Agent</strong> — Reads QUT Timetable and Canvas ICS feeds live, detects clashes, sends smart reminders.<br><br>
+<strong>Assignment Tracker</strong> — Syncs from Canvas, tracks completion, warns 7, 3 and 1 day before deadlines.<br><br>
+<strong>Meal Buddy</strong> An AI based social dining application for campus students.<br><br>
+<strong>International Student Guide</strong> — Complete onboarding assistant for new students arriving in Brisbane.`,
+   stats:[],
+   n:"JARVIS has four core capabilities. A scheduling agent that reads your live timetable and Canvas feeds. An assignment tracker that warns you seven, three, and one day before every deadline. A food connoisseur that finds you a meal buddy. And a complete international student guide for those new to Brisbane city."},
+  {title:"<span class='ac'>Impact</span>",sub:"Who We Built This For",
+   body:`JARVIS serves <strong>50,000+ QUT students</strong> — with a special focus on international students who are new to Brisbane, unfamiliar with the Australian university system, and navigating an unfamiliar city without a support network.<br><br>
+JARVIS is their <strong>first intelligent companion at QUT</strong> — available 24 hours a day, 7 days a week, knowing exactly who they are from day one.`,
+   stats:[{v:"50K+",l:"QUT Students"},{v:"24/7",l:"Available"},{v:"100%",l:"Personalised"}],
+   n:"We built JARVIS for all fifty thousand plus QUT students — with a special focus on international students who arrive in Brisbane without support networks, unfamiliar with the Australian university system. JARVIS is their first intelligent companion at QUT — available twenty four seven, knowing exactly who they are from day one."},
+  {title:"<span class='ac'>Team</span> Hey Jarvis !",sub:"AIML Hackathon 2026 — Queensland University of Technology",
+   body:`A multidisciplinary QUT team combining <strong>frontend development</strong>, <strong>backend AI engineering</strong>, <strong>Agentic AI Orchestration</strong>, and <strong>UX design</strong>.<br><br>
+Our mission: <em>To make every QUT student feel like they have their own personal Iron Man AI.</em><br><br>
+<strong> I am JARVIS , Forget the degree — let's build the future together with AI ! </strong>`,
+   stats:[],
+   n:"We are Team Hey Jarvis — a multidisciplinary group of QUT students combining frontend development, backend AI engineering, Agentic AI Orchestration, and UX design. Our mission is simple: to make every QUT student feel like they have their own personal Iron Man AI.  I am JARVIS, forget the degree — lets build the future together with AI."}
+  ,{title:"Meet My <span class='ac'>Creators</span>",sub:"The Team Behind J.A.R.V.I.S — AIML Hackathon 2026",
+   body:`<div class="team-card" data-name="Hashim" data-role="AI Architect" data-img="https://smbclouddrive.blob.core.windows.net/sitecontent/Hashim.jpg"></div><div class="team-card" data-name="Hieu" data-role="Lead Engineer" data-img="https://smbclouddrive.blob.core.windows.net/sitecontent/Hieu.jpg"></div><div class="team-card" data-name="Karol" data-role="Lead Engineer" data-img="https://smbclouddrive.blob.core.windows.net/sitecontent/Karol.jpg"></div><div class="team-card" data-name="Kris" data-role="Design Engineer" data-img="https://smbclouddrive.blob.core.windows.net/sitecontent/Kris.jpg"></div><div class="team-card" data-name="Toku" data-role="Full Stack Developer" data-img="https://smbclouddrive.blob.core.windows.net/sitecontent/Toku.jpg"></div>`,
+   stats:[],
+   isTeam:true,
+   n:"Allow me to introduce the brilliant minds behind my existence. Hashim, my Architect. Hieu and Karol , my Lead Engineers. Kris, my Design Engineer and Toku, my Full Stack Developer. Together, they built me in a Hackathon. I am JARVIS, and I am honoured to serve you."}
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let apiKey='', slide=0, speaking=false;
+let wsConn=null, audioCtx=null, audioQueue=[], isPlaying=false;
+let animT=0, speechAmp=0, uptime=0;
+
+// ── BACKGROUND CANVAS ────────────────────────────────────────────────────────
+const bgC=document.getElementById('bg-canvas');
+const bgX=bgC.getContext('2d');
+let W,H,cx,cy;
+const BC=32;
+let bars=new Array(BC).fill(0), barT=new Array(BC).fill(0);
+
+function rsz(){W=bgC.width=window.innerWidth;H=bgC.height=window.innerHeight;cx=W/2;cy=H/2;}
+rsz(); window.addEventListener('resize',rsz);
+
+function updBars(){
+  for(let i=0;i<BC;i++){
+    if(speaking){const c=(i-BC/2)/(BC/2);barT[i]=(0.1+Math.random()*0.9)*speechAmp*Math.exp(-c*c*2);}
+    else barT[i]=0.02+Math.abs(Math.sin(animT*0.5+i*0.2))*0.04;
+    bars[i]+=(barT[i]-bars[i])*0.25;
+  }
+}
+
+let lb=0,lu=0;
+function bgLoop(ts){
+  requestAnimationFrame(bgLoop);
+  animT+=0.016;
+  const ta=speaking?(0.5+Math.sin(animT*1.7)*0.3+Math.sin(animT*3.1)*0.2):0.03;
+  speechAmp+=(ta-speechAmp)*0.08;
+  if(ts-lb>40){updBars();lb=ts;}
+  if(ts-lu>1000){
+    uptime++;
+    const hh=String(Math.floor(uptime/3600)).padStart(2,'0');
+    const mm=String(Math.floor((uptime%3600)/60)).padStart(2,'0');
+    const ss=String(uptime%60).padStart(2,'0');
+    document.getElementById('htl').innerHTML=`SYS.CORE: ACTIVE<br>NEURAL.NET: 99.2%<br>UPTIME: ${hh}:${mm}:${ss}`;
+    lu=ts;
+  }
+  // Draw bg
+  bgX.clearRect(0,0,W,H);
+  bgX.fillStyle='#020d1a'; bgX.fillRect(0,0,W,H);
+  bgX.strokeStyle='rgba(0,200,255,0.05)'; bgX.lineWidth=0.5;
+  for(let x=0;x<W;x+=28){bgX.beginPath();bgX.moveTo(x,0);bgX.lineTo(x,H);bgX.stroke();}
+  for(let y=0;y<H;y+=28){bgX.beginPath();bgX.moveTo(0,y);bgX.lineTo(W,y);bgX.stroke();}
+  const g=bgX.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*0.5);
+  g.addColorStop(0,'rgba(0,200,255,0.04)'); g.addColorStop(1,'transparent');
+  bgX.fillStyle=g; bgX.fillRect(0,0,W,H);
+  // Voice bars canvas
+  const vc=document.getElementById('voice-canvas');
+  const vx=vc.getContext('2d');
+  vx.clearRect(0,0,280,56);
+  if(speaking){
+    const bw=5,gap=2,mh=44,tot=(bw+gap)*BC,sx=(280-tot)/2;
+    for(let i=0;i<BC;i++){
+      const bh=bars[i]*mh;
+      vx.fillStyle=`rgba(0,200,255,${0.4+bars[i]*0.6})`;
+      vx.fillRect(sx+i*(bw+gap),28-bh/2,bw,bh||1);
+    }
+    vx.fillStyle='rgba(0,200,255,0.3)'; vx.font='8px Courier New'; vx.textAlign='center';
+    vx.fillText('VOICE WAVEFORM',140,52);
+  }
+}
+requestAnimationFrame(bgLoop);
+
+// ── CLOCK ────────────────────────────────────────────────────────────────────
+function startClock(){setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-AU',{hour12:false});},1000);}
+
+// ── WAKE SCREEN ──────────────────────────────────────────────────────────────
+const WAKE_STEPS = [
+  {pct:12, msg:'LOADING NEURAL CORE...'},
+  {pct:25, msg:'CALIBRATING VOICE SYNTHESIZER...'},
+  {pct:40, msg:'CONNECTING TO SUPABASE...'},
+  {pct:55, msg:'SYNCING QUT TIMETABLE FEEDS...'},
+  {pct:68, msg:'LOADING LANGUAGE MODELS...'},
+  {pct:80, msg:'INITIALISING REALTIME API...'},
+  {pct:92, msg:'RUNNING SYSTEM DIAGNOSTICS...'},
+  {pct:100,msg:'ALL SYSTEMS NOMINAL. WELCOME !'},
+];
+
+// Animated arc reactor on wake canvas
+const wc=document.getElementById('wake-canvas');
+const wx=wc.getContext('2d');
+let wt=0;
+function drawWakeArc(){
+  wx.clearRect(0,0,320,60);
+  const cx=160,cy=30,r=22;
+  // Outer ring
+  wx.beginPath(); wx.arc(cx,cy,r,0,Math.PI*2);
+  wx.strokeStyle='rgba(0,200,255,0.2)'; wx.lineWidth=1; wx.stroke();
+  // Spinning arc
+  const s=wt*2, e=s+Math.PI*1.2;
+  wx.beginPath(); wx.arc(cx,cy,r,s,e);
+  wx.strokeStyle='rgba(0,200,255,0.9)'; wx.lineWidth=2; wx.stroke();
+  // Inner ring
+  wx.beginPath(); wx.arc(cx,cy,r*0.65,-wt*1.5,-wt*1.5+Math.PI);
+  wx.strokeStyle='rgba(245,166,35,0.7)'; wx.lineWidth=1.5; wx.stroke();
+  // Core dot
+  wx.beginPath(); wx.arc(cx,cy,4+Math.sin(wt*3)*1.5,0,Math.PI*2);
+  wx.fillStyle='#00c8ff'; wx.fill();
+  wt+=0.04;
+}
+let wakeRaf;
+function wakeLoop(){wakeRaf=requestAnimationFrame(wakeLoop);drawWakeArc();}
+wakeLoop();
+
+async function runWakeSequence(){
+  startClock();
+  const bar=document.getElementById('wake-bar');
+  const status=document.getElementById('wake-status');
+  for(const step of WAKE_STEPS){
+    bar.style.width=step.pct+'%';
+    status.textContent=step.msg;
+    await new Promise(r=>setTimeout(r, step.pct===100 ? 900 : 380));
+  }
+  // Fade out wake screen
+  const ws=document.getElementById('wake-screen');
+  ws.classList.add('fade-out');
+  cancelAnimationFrame(wakeRaf);
+  await new Promise(r=>setTimeout(r,1300));
+  ws.style.display='none';
+  // Immediately start presentation — AudioContext already unlocked by the initial click
+  await startPresentation();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+apiKey = '';
+buildDots();
+renderSlide(0);
+
+// Show click prompt on the wake screen immediately
+const wakeStatusEl = document.getElementById('wake-status');
+const wakeSubEl    = document.getElementById('wake-sub');
+wakeStatusEl.textContent = 'CLICK ANYWHERE TO ACTIVATE J.A.R.V.I.S';
+wakeStatusEl.classList.add('blink');
+wakeSubEl.textContent    = 'Awaiting Activation';
+
+// Wait for ONE click — this also unlocks AudioContext for the whole session
+document.addEventListener('click', async ()=>{
+  // Stop blinking, show activating
+  wakeStatusEl.classList.remove('blink');
+  wakeStatusEl.textContent = 'ACTIVATING...';
+  wakeSubEl.textContent    = 'Waking Up System';
+  // Now run wake sequence and auto-play
+  runWakeSequence();
+}, {once:true});
+
+// ── AUTOMATED PRESENTATION ───────────────────────────────────────────────────
+async function startPresentation(){
+  setSt('PRESENTATION STARTING...');
+  await new Promise(r=>setTimeout(r,600));
+  await speakAndAdvance(0);
+}
+
+async function speakAndAdvance(i){
+  if(i>=SLIDES.length) return;
+  renderSlide(i);
+  await new Promise(r=>setTimeout(r,800)); // let slide render settle
+  await startSpeakingAsync();              // speak and wait for completion
+  await new Promise(r=>setTimeout(r,1200)); // pause between slides
+  await speakAndAdvance(i+1);
+}
+
+// ── DOTS & SLIDES ────────────────────────────────────────────────────────────
+function buildDots(){
+  const c=document.getElementById('dots');
+  document.getElementById('stot').textContent=String(SLIDES.length).padStart(2,'0');
+  SLIDES.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');c.appendChild(d);});
+}
+function renderSlide(i){
+  slide=i;
+  const s=SLIDES[i];
+  document.getElementById('snum').textContent=String(i+1).padStart(2,'0');
+  document.getElementById('stitle').innerHTML=s.title;
+  document.getElementById('ssub').textContent=s.sub;
+  document.getElementById('sbody').innerHTML=s.body;
+  const st=document.getElementById('sstats'); st.innerHTML='';
+  (s.stats||[]).forEach(x=>{st.innerHTML+=`<div class="stat"><div class="sv">${x.v}</div><div class="sl">${x.l}</div></div>`;});
+  const sp=document.getElementById('slide-panel');
+  sp.classList.remove('s-anim'); void sp.offsetWidth; sp.classList.add('s-anim');
+  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active',j===i));
+  setSt('SLIDE '+(i+1)+' / '+SLIDES.length);
+  if(s.isTeam) renderTeamSlide();
+  else document.getElementById('slide-panel').classList.remove('team-slide');
+}
+
+// ── MP3 AUDIO URLS (one per slide) ───────────────────────────────────────────
+const SLIDE_AUDIO = [
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_1.mp3',
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_2.mp3',
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_3.mp3',
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_4.mp3',
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_5.mp3',
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_6.mp3',
+  'https://smbclouddrive.blob.core.windows.net/sitecontent/slide_7.mp3',
+];
+
+// Active <audio> element so we can stop it if needed
+let activeAudio = null;
+
+// ── MP3 VOICE (returns Promise that resolves when audio finishes) ─────────────
+async function startSpeakingAsync(){
+  const url = SLIDE_AUDIO[slide];
+  if(!url){ console.warn('No audio for slide', slide+1); return; }
+  setSpeakState(true);
+  setSt('NARRATING — GPT-Realtime');
+
+  return new Promise((resolve)=>{
+    const audio = new Audio(url);
+    audio.playbackRate = 0.9;
+    activeAudio = audio;
+
+    // Drive the voice-waveform bars while audio plays
+    const fakeAmpInterval = setInterval(()=>{ speechAmp = 0.5 + Math.random()*0.5; }, 80);
+
+    // ── Word-by-word transcript synced to audio duration ──────────────────
+    const narrationText = SLIDES[slide].n || '';
+    const words = narrationText.trim().split(/\s+/);
+    const tr = document.getElementById('transcript');
+    tr.textContent = '';
+    tr.style.opacity = '1';
+    let wordInterval = null;
+
+    function startTranscript(duration){
+      // Actual playback time is longer due to 0.6x rate
+      const actualMs = (duration / audio.playbackRate) * 950;
+      const delay = words.length > 1 ? actualMs / words.length : actualMs;
+      let wi = 0;
+      wordInterval = setInterval(()=>{
+        if(wi < words.length){
+          tr.textContent += (wi === 0 ? '' : ' ') + words[wi];
+          wi++;
+          tr.scrollTop = tr.scrollHeight;
+        } else {
+          clearInterval(wordInterval);
+          wordInterval = null;
+        }
+      }, delay);
+    }
+
+    // Start transcript once we know the duration
+    audio.addEventListener('loadedmetadata', ()=>{
+      if(audio.duration && isFinite(audio.duration)){
+        startTranscript(audio.duration);
+      }
+    });
+
+    function finish(){
+      clearInterval(fakeAmpInterval);
+      if(wordInterval){ clearInterval(wordInterval); wordInterval = null; }
+      // Show any remaining words instantly before fade-out
+      tr.textContent = narrationText;
+      speechAmp = 0;
+      activeAudio = null;
+      cleanupSpeaking();
+      resolve();
+    }
+
+    audio.addEventListener('ended', finish);
+    audio.addEventListener('error', (e)=>{ console.error('Audio error', e); finish(); });
+
+    audio.play().catch((e)=>{ console.error('Audio play failed', e); finish(); });
+  });
+}
+
+function cleanupSpeaking(){
+  if(activeAudio){ try{ activeAudio.pause(); activeAudio.src=''; }catch(e){} activeAudio=null; }
+  audioQueue=[];isPlaying=false;
+  setSpeakState(false);
+  setTimeout(()=>{const tr=document.getElementById('transcript');tr.style.opacity='0';setTimeout(()=>{tr.textContent='';},400);},1500);
+}
+
+// Keep stopSpeaking for compatibility
+function stopSpeaking(){ if(activeAudio){ try{ activeAudio.pause(); }catch(e){} } cleanupSpeaking(); }
+
+function setSpeakState(on){
+  speaking=on;
+  const svg=document.querySelector('#svg-panel svg');
+  document.getElementById('svg-panel').classList.toggle('speaking',on);
+  svg.classList.toggle('jarvis-speaking',on);
+  document.getElementById('htr').innerHTML=`MODE: ${on?'SPEAKING':'PASSIVE'}<br>THREAT: NONE<br>SUIT: STANDBY`;
+  setSt(on?'NARRATING — GPT-Realtime':'STANDBY');
+}
+function setSt(t){document.getElementById('bstatus').textContent=t;}
+
+
+const TEAM_DEGREES = {
+  'Hashim': 'Master of AI · Sem 2',
+  'Hieu':   'Master of AI · Sem 3',
+  'Karol':  'Master of AI · Sem 2',
+  'Kris':   'Master of IT Design · Sem 3',
+  'Toku':   'Master of IT CS · Graduate'
+};
+
+// ── TEAM SLIDE RENDERER ──────────────────────────────────────────────────────
+function renderTeamSlide(){
+  const panel = document.getElementById('slide-panel');
+  panel.classList.add('team-slide');
+  const body = document.getElementById('sbody');
+  const cards = body.querySelectorAll('.team-card');
+  let html = '<div class="team-grid">';
+  cards.forEach((c,i) => {
+    const name = c.dataset.name;
+    const role = c.dataset.role;
+    const img  = c.dataset.img;
+    html += `<div class="team-card-frame">
+      <div class="team-photo-wrap">
+        <img src="${img}" alt="${name}" loading="lazy"/>
+        <div class="team-corner tl"></div>
+        <div class="team-corner tr"></div>
+        <div class="team-corner bl"></div>
+        <div class="team-corner br"></div>
+      </div>
+      <div class="team-name">${name}</div>
+      <div class="team-role">${role}</div>
+      <div class="team-id">${TEAM_DEGREES[name]||''}</div>
+    </div>`;
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+</script>
+</body>
+</html>
