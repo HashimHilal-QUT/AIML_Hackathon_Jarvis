@@ -35,6 +35,74 @@ function newSessionTag() {
   return Math.random().toString(36).slice(2, 10)
 }
 
+// Canonical UUID pattern (8-4-4-4-12 hex).
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Resolve a free-form subject reference to a canonical UUID.
+ *
+ * Sage (OpenAI Realtime) occasionally truncates long opaque strings when it
+ * echoes them back as tool-call arguments — the 36-char UUID `36097dbe-763a-...`
+ * becomes just `36097dbe`. If we forward that to `/api/subjects/:id` Postgres
+ * will reject the short string as an invalid UUID and return a 500. This
+ * helper runs BEFORE the fetch so we never send garbage to the server:
+ *
+ *   1. Full UUID → return as-is if it matches one of the user's subjects.
+ *   2. UUID prefix (6+ hex chars) → match against subject.id startsWith.
+ *      If exactly one subject matches, use it.
+ *   3. Exact code (case-insensitive) → match against subject.code.
+ *   4. Exact name (case-insensitive) → match against subject.name.
+ *   5. Substring on code or name → first match wins.
+ *
+ * Returns the full UUID of the matching subject, or null.
+ *
+ * @param {Array<{id: string, name?: string, code?: string}>} subjects - from GET /api/subjects
+ * @param {string} ref - user-provided or model-echoed reference
+ * @returns {string | null}
+ */
+function resolveSubjectRef(subjects, ref) {
+  if (!Array.isArray(subjects) || !subjects.length) return null
+  const raw = String(ref || '').trim()
+  if (!raw) return null
+  const lower = raw.toLowerCase()
+
+  // 1. Full UUID
+  if (UUID_RE.test(raw)) {
+    const hit = subjects.find((s) => (s.id || '').toLowerCase() === lower)
+    return hit ? hit.id : null
+  }
+
+  // 2. UUID prefix (hex-only, 6+ chars, dashes allowed)
+  const hexOnly = lower.replace(/-/g, '')
+  if (hexOnly.length >= 6 && /^[0-9a-f]+$/.test(hexOnly)) {
+    const prefixMatches = subjects.filter((s) =>
+      (s.id || '').toLowerCase().startsWith(lower)
+    )
+    if (prefixMatches.length === 1) return prefixMatches[0].id
+    // 2+ matches → ambiguous, fall through to name/code checks
+  }
+
+  // 3. Exact code
+  const exactCode = subjects.find(
+    (s) => (s.code || '').trim().toLowerCase() === lower
+  )
+  if (exactCode) return exactCode.id
+
+  // 4. Exact name
+  const exactName = subjects.find(
+    (s) => (s.name || '').trim().toLowerCase() === lower
+  )
+  if (exactName) return exactName.id
+
+  // 5. Substring
+  const sub = subjects.find(
+    (s) =>
+      (s.code || '').toLowerCase().includes(lower) ||
+      (s.name || '').toLowerCase().includes(lower)
+  )
+  return sub ? sub.id : null
+}
+
 // Fire-and-forget debug breadcrumb to the backend so we can tail client
 // state from the server. Swallows all errors — debug must not affect flow.
 function postDebug(sessionTag, event, data) {
@@ -336,22 +404,23 @@ async function executeRealtimeTool(sessionTag, name, rawArgs) {
     }
 
     if (name === 'get_subject_context') {
-      // Resolve by name if no id — fetch the subject list, fuzzy match
-      let sid = args.subject_id
-      if (!sid && args.subject_name) {
-        const listRes = await fetch('/api/subjects', { headers: auth })
-        if (!listRes.ok) return { error: 'list_failed', status: listRes.status }
-        const listBody = await listRes.json()
-        const ref = args.subject_name.toLowerCase()
-        const found = (listBody.subjects || []).find(
-          (s) =>
-            s.id === args.subject_name ||
-            (s.name || '').toLowerCase().includes(ref) ||
-            (s.code || '').toLowerCase().includes(ref)
-        )
-        if (found) sid = found.id
-      }
-      if (!sid) return { error: 'subject_not_found' }
+      // Sage (OpenAI Realtime) sometimes truncates opaque UUIDs when echoing
+      // them back as tool args — e.g. passing "36097dbe" instead of the full
+      // "36097dbe-763a-4cac-9e09-925add560fd4". Resolve any short/malformed
+      // ref against the canonical subject list BEFORE hitting /api/subjects/:id,
+      // which expects a real UUID. The backend ALSO has a fallback now, but
+      // this avoids the round-trip and cleaner logs on the happy path.
+      const candidate = args.subject_id || args.subject_name || ''
+      const ref = String(candidate).trim()
+      if (!ref) return { error: 'subject_not_found', reason: 'no ref provided' }
+
+      const listRes = await fetch('/api/subjects', { headers: auth })
+      if (!listRes.ok) return { error: 'list_failed', status: listRes.status }
+      const listBody = await listRes.json()
+      const allSubjects = listBody.subjects || []
+      const sid = resolveSubjectRef(allSubjects, ref)
+      if (!sid) return { error: 'subject_not_found', ref }
+
       // The detail endpoint returns {subject, materials} — assemble a compact dossier for Sage
       const detRes = await fetch(`/api/subjects/${encodeURIComponent(sid)}`, { headers: auth })
       if (!detRes.ok) return { error: 'fetch_failed', status: detRes.status }
@@ -440,22 +509,15 @@ async function executeRealtimeTool(sessionTag, name, rawArgs) {
     }
 
     if (name === 'add_subject_material_text') {
-      let sid = args.subject_id
-      if (!sid && args.subject_name) {
-        const listRes = await fetch('/api/subjects', { headers: auth })
-        if (listRes.ok) {
-          const listBody = await listRes.json()
-          const ref = args.subject_name.toLowerCase()
-          const found = (listBody.subjects || []).find(
-            (s) =>
-              s.id === args.subject_name ||
-              (s.name || '').toLowerCase().includes(ref) ||
-              (s.code || '').toLowerCase().includes(ref)
-          )
-          if (found) sid = found.id
-        }
-      }
-      if (!sid) return { error: 'subject_not_found' }
+      // Same truncation defense as get_subject_context above.
+      const candidate = args.subject_id || args.subject_name || ''
+      const ref = String(candidate).trim()
+      if (!ref) return { error: 'subject_not_found', reason: 'no ref provided' }
+      const listRes = await fetch('/api/subjects', { headers: auth })
+      if (!listRes.ok) return { error: 'list_failed', status: listRes.status }
+      const listBody = await listRes.json()
+      const sid = resolveSubjectRef(listBody.subjects || [], ref)
+      if (!sid) return { error: 'subject_not_found', ref }
       if (!args.kind || !args.content_text) return { error: 'missing_kind_or_content' }
       const res = await fetch(`/api/subjects/${encodeURIComponent(sid)}/materials/text`, {
         method: 'POST',

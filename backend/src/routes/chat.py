@@ -288,18 +288,29 @@ TOOLS = [
         "name": "get_subject_context",
         "description": (
             "Return the full dossier for one subject — its syllabus, modules, "
-            "assignments, rubrics, notes, and extracted file text. Accepts "
-            "either the subject_id (UUID) OR a human string like 'IFN680' or "
-            "'Machine Learning'. Call this when the student asks detailed "
-            "questions about a specific course."
+            "assignments, rubrics, notes, and extracted file text. Call this "
+            "when the student asks detailed questions about a specific course. "
+            "The backend accepts a full UUID, a UUID prefix, an exact code, "
+            "or a partial name — so if you aren't 100% sure you copied the "
+            "full UUID verbatim from list_subjects, pass the human name or "
+            "code via `subject_name` instead."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
-                "subject_id": {"type": "string"},
+                "subject_id": {
+                    "type": "string",
+                    "description": (
+                        "Full 36-character UUID copied exactly from list_subjects. "
+                        "If unsure, leave blank and use subject_name."
+                    ),
+                },
                 "subject_name": {
                     "type": "string",
-                    "description": "Fuzzy match on name or code when subject_id is unknown.",
+                    "description": (
+                        "Course code or human name — e.g. 'IFN680' or 'Machine "
+                        "Learning'. Fuzzy case-insensitive matching."
+                    ),
                 },
             },
         },

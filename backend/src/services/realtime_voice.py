@@ -312,15 +312,31 @@ REALTIME_TOOLS: list[dict[str, Any]] = [
         "name": "get_subject_context",
         "description": (
             "Return the full dossier for one subject (syllabus + modules + "
-            "rubrics + assignments + extracted file text). Accepts either "
-            "the subject_id UUID or a name/code string like 'IFN680' or "
-            "'Machine Learning'."
+            "rubrics + assignments + extracted file text). You can pass "
+            "EITHER `subject_id` (the full UUID from list_subjects) OR "
+            "`subject_name` (the human name or course code like 'IFN680' / "
+            "'Machine Learning'). Prefer `subject_name` unless you have the "
+            "full 36-character UUID copied verbatim — if you're not sure "
+            "you remember the whole UUID exactly, use subject_name instead "
+            "so the backend can fuzzy-match."
         ),
         "parameters": {
             "type": "object",
             "properties": {
-                "subject_id": {"type": "string"},
-                "subject_name": {"type": "string"},
+                "subject_id": {
+                    "type": "string",
+                    "description": (
+                        "Full 36-character UUID only. If you only remember "
+                        "part of it, leave this blank and use subject_name."
+                    ),
+                },
+                "subject_name": {
+                    "type": "string",
+                    "description": (
+                        "Course code or name — e.g. 'IFN680' or 'Machine "
+                        "Learning'. The backend fuzzy-matches case-insensitively."
+                    ),
+                },
             },
         },
     },

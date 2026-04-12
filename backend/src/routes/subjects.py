@@ -8,6 +8,7 @@ trust a client-supplied user_id.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any, Literal
 
@@ -21,6 +22,11 @@ from src.services.calendar_sync import ensure_profile_row
 from src.supabase_client import get_supabase
 
 router = APIRouter(prefix="/api/subjects", tags=["subjects"])
+
+# Full canonical UUID pattern (8-4-4-4-12 hex).
+_UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
 
 # Path to the one-time migration SQL — served to the frontend so users can
 # copy it into the Supabase dashboard with one click.
@@ -98,24 +104,101 @@ class MaterialTextCreate(BaseModel):
 # -------- Helpers --------
 
 
-def _assert_owns_subject(sb, subject_id: str, user_id: str) -> dict[str, Any]:
+def _find_subject_by_ref(
+    sb, subject_ref: str, user_id: str
+) -> dict[str, Any] | None:
+    """Resolve a subject reference to the full DB row owned by user_id.
+
+    Accepts any of:
+      * Full canonical UUID (36 chars)
+      * UUID prefix (Sage/OpenAI Realtime sometimes truncates opaque IDs
+        to the first 8 hex chars when echoing them back as tool arguments)
+      * Exact / partial case-insensitive match on `code` or `name`
+
+    Returns the full subject row dict, or None if nothing matches. A single
+    query fetches all the user's subjects (tiny table per user — typically
+    < 20 rows) and the matching happens in-process, avoiding fragile Postgres
+    UUID casts and staying robust to any weird input the model produces.
+    """
+    ref = (subject_ref or "").strip()
+    if not ref:
+        return None
+
     try:
         resp = (
             sb.table("subjects")
             .select(SUBJECT_COLUMNS)
-            .eq("id", subject_id)
             .eq("user_id", user_id)
-            .maybe_single()
+            .order("created_at", desc=True)
             .execute()
         )
     except Exception as exc:
         if _is_missing_table_error(exc):
             raise _schema_not_ready()
         raise
-    data = resp.data if resp else None
-    if not data:
+
+    subjects: list[dict[str, Any]] = resp.data or []
+    if not subjects:
+        return None
+
+    ref_lower = ref.lower()
+
+    # 1. Exact UUID match
+    if _UUID_RE.match(ref):
+        for s in subjects:
+            if (s.get("id") or "").lower() == ref_lower:
+                return s
+        # Full UUID that the user doesn't own → not found
+        return None
+
+    # 2. UUID prefix: hex-only (with or without dashes), at least 6 chars.
+    #    Sage tends to truncate to the first 8 hex chars of the canonical
+    #    UUID — we accept anywhere from 6 up to a full UUID prefix.
+    hex_only = ref_lower.replace("-", "")
+    if len(hex_only) >= 6 and all(c in "0123456789abcdef" for c in hex_only):
+        prefix_matches = [
+            s
+            for s in subjects
+            if (s.get("id") or "").lower().startswith(ref_lower)
+        ]
+        if len(prefix_matches) == 1:
+            return prefix_matches[0]
+        # If 2+ match, the prefix is ambiguous — fall through to
+        # name/code matching in case the ref happens to be a code like
+        # "ABC123" that also looks hex-ish.
+
+    # 3. Exact code match (case-insensitive)
+    for s in subjects:
+        if (s.get("code") or "").strip().lower() == ref_lower:
+            return s
+
+    # 4. Exact name match
+    for s in subjects:
+        if (s.get("name") or "").strip().lower() == ref_lower:
+            return s
+
+    # 5. Substring match on code or name
+    for s in subjects:
+        code = (s.get("code") or "").lower()
+        name = (s.get("name") or "").lower()
+        if ref_lower in code or ref_lower in name:
+            return s
+
+    return None
+
+
+def _assert_owns_subject(sb, subject_ref: str, user_id: str) -> dict[str, Any]:
+    """Look up a subject owned by user_id. Accepts a full UUID, a UUID prefix,
+    or a name/code reference. Raises 404 if no match.
+
+    Callers should use the returned row's `id` for any downstream `eq("id", …)`
+    queries — the raw `subject_ref` may be a non-UUID string that Postgres
+    will reject with 22P02 if passed verbatim to a uuid column.
+    """
+    row = _find_subject_by_ref(sb, subject_ref, user_id)
+    if not row:
         raise HTTPException(404, "Subject not found")
-    return data
+    return row
 
 
 def _material_to_dict(row: dict[str, Any]) -> dict[str, Any]:
@@ -191,11 +274,12 @@ async def get_subject(
 ) -> dict[str, Any]:
     sb = get_supabase()
     subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
     # Attach materials as a convenience for the detail page
     mat_resp = (
         sb.table("subject_materials")
         .select(MATERIAL_COLUMNS)
-        .eq("subject_id", subject_id)
+        .eq("subject_id", canonical_id)
         .eq("user_id", user_id)
         .order("created_at", desc=True)
         .execute()
@@ -211,12 +295,13 @@ async def update_subject(
     user_id: str = Depends(get_current_user_id),
 ) -> dict[str, Any]:
     sb = get_supabase()
-    _assert_owns_subject(sb, subject_id, user_id)
+    subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
     update = body.model_dump(exclude_unset=True)
     if not update:
-        return _assert_owns_subject(sb, subject_id, user_id)
-    sb.table("subjects").update(update).eq("id", subject_id).eq("user_id", user_id).execute()
-    return _assert_owns_subject(sb, subject_id, user_id)
+        return subject
+    sb.table("subjects").update(update).eq("id", canonical_id).eq("user_id", user_id).execute()
+    return _assert_owns_subject(sb, canonical_id, user_id)
 
 
 @router.delete("/{subject_id}")
@@ -225,14 +310,15 @@ async def delete_subject(
     user_id: str = Depends(get_current_user_id),
 ) -> dict[str, str]:
     sb = get_supabase()
-    _assert_owns_subject(sb, subject_id, user_id)
+    subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
 
     # Delete storage objects first — if this fails, DB rows remain and can be
     # retried. Foreign-key cascade handles the subject_materials rows.
     mat_resp = (
         sb.table("subject_materials")
         .select("file_path")
-        .eq("subject_id", subject_id)
+        .eq("subject_id", canonical_id)
         .eq("user_id", user_id)
         .execute()
     )
@@ -240,8 +326,8 @@ async def delete_subject(
         if row.get("file_path"):
             storage.delete_object(row["file_path"])
 
-    sb.table("subjects").delete().eq("id", subject_id).eq("user_id", user_id).execute()
-    return {"deleted": subject_id}
+    sb.table("subjects").delete().eq("id", canonical_id).eq("user_id", user_id).execute()
+    return {"deleted": canonical_id}
 
 
 # -------- Material CRUD --------
@@ -255,9 +341,10 @@ async def create_material_text(
 ) -> dict[str, Any]:
     """Create a text-only material (no file upload)."""
     sb = get_supabase()
-    _assert_owns_subject(sb, subject_id, user_id)
+    subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
     row = {
-        "subject_id": subject_id,
+        "subject_id": canonical_id,
         "user_id": user_id,
         "kind": body.kind,
         "title": body.title or body.kind.capitalize(),
@@ -282,7 +369,8 @@ async def create_material_upload(
 ) -> dict[str, Any]:
     """Upload a file (PDF, image, text) and extract its text for chat context."""
     sb = get_supabase()
-    _assert_owns_subject(sb, subject_id, user_id)
+    subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
 
     data = await file.read()
     if not data:
@@ -293,7 +381,7 @@ async def create_material_upload(
     material_id = storage.generate_material_id()
     object_path = storage.build_object_path(
         user_id=user_id,
-        subject_id=subject_id,
+        subject_id=canonical_id,
         material_id=material_id,
         filename=file.filename,
         content_type=file.content_type,
@@ -313,7 +401,7 @@ async def create_material_upload(
 
     row = {
         "id": material_id,
-        "subject_id": subject_id,
+        "subject_id": canonical_id,
         "user_id": user_id,
         "kind": kind,
         "title": title or (file.filename or kind.capitalize()),
@@ -345,11 +433,12 @@ async def list_materials(
     user_id: str = Depends(get_current_user_id),
 ) -> dict[str, Any]:
     sb = get_supabase()
-    _assert_owns_subject(sb, subject_id, user_id)
+    subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
     query = (
         sb.table("subject_materials")
         .select(MATERIAL_COLUMNS)
-        .eq("subject_id", subject_id)
+        .eq("subject_id", canonical_id)
         .eq("user_id", user_id)
         .order("created_at", desc=True)
     )
@@ -366,12 +455,13 @@ async def delete_material(
     user_id: str = Depends(get_current_user_id),
 ) -> dict[str, str]:
     sb = get_supabase()
-    _assert_owns_subject(sb, subject_id, user_id)
+    subject = _assert_owns_subject(sb, subject_id, user_id)
+    canonical_id = subject["id"]
     resp = (
         sb.table("subject_materials")
         .select("file_path")
         .eq("id", material_id)
-        .eq("subject_id", subject_id)
+        .eq("subject_id", canonical_id)
         .eq("user_id", user_id)
         .maybe_single()
         .execute()
@@ -458,49 +548,22 @@ def build_subjects_summary(user_id: str, max_chars: int = 2_500) -> str:
 
 
 def resolve_subject_id(user_id: str, subject_ref: str) -> str | None:
-    """Resolve a UUID, exact code, or partial name to a subject id.
+    """Resolve a UUID, UUID prefix, exact code, or partial name to a subject id.
 
     Used by chat/voice tools that take a friendly string like
-    `subject="Machine Learning"` or `subject="IFN680"` and need the real id.
-    Returns None if nothing matches.
+    `subject="Machine Learning"`, `subject="IFN680"`, or a UUID prefix the
+    voice model truncated. Returns None if nothing matches. Delegates to
+    `_find_subject_by_ref` so there's one canonical matching algorithm.
     """
-    if not subject_ref or not subject_ref.strip():
-        return None
-    ref = subject_ref.strip()
     sb = get_supabase()
-
-    # First try as exact UUID
-    if len(ref) == 36 and ref.count("-") == 4:
-        try:
-            r = (
-                sb.table("subjects")
-                .select("id")
-                .eq("id", ref)
-                .eq("user_id", user_id)
-                .maybe_single()
-                .execute()
-            )
-            if r and r.data:
-                return r.data["id"]
-        except Exception:
-            pass
-
-    # Case-insensitive name/code substring match
     try:
-        pattern = f"%{ref}%"
-        r = (
-            sb.table("subjects")
-            .select("id,name,code")
-            .eq("user_id", user_id)
-            .or_(f"name.ilike.{pattern},code.ilike.{pattern}")
-            .limit(1)
-            .execute()
-        )
-        if r.data:
-            return r.data[0]["id"]
-    except Exception:
-        pass
-    return None
+        row = _find_subject_by_ref(sb, subject_ref, user_id)
+    except HTTPException:
+        # _find_subject_by_ref raises 412 if the subjects table is missing —
+        # swallow it here and return None so the caller (voice/chat tool)
+        # can gracefully report "no subjects found" instead of crashing.
+        return None
+    return row["id"] if row else None
 
 
 def search_subject_materials(
@@ -561,29 +624,29 @@ def search_subject_materials(
     return results
 
 
-def build_subject_context(subject_id: str, user_id: str, max_chars: int = 30_000) -> str:
+def build_subject_context(subject_ref: str, user_id: str, max_chars: int = 30_000) -> str:
     """Assemble a compact plain-text dossier about a subject for Claude.
 
-    Returns an empty string if the subject doesn't exist or the user doesn't
-    own it. Silently truncates to keep the prompt under `max_chars`.
+    Accepts any of: a full UUID, a truncated UUID prefix (voice models often
+    do this), an exact or partial name/code. Returns an empty string if
+    nothing matches or the user doesn't own the subject. Silently truncates
+    to keep the prompt under `max_chars`.
     """
     sb = get_supabase()
-    subj_resp = (
-        sb.table("subjects")
-        .select(SUBJECT_COLUMNS)
-        .eq("id", subject_id)
-        .eq("user_id", user_id)
-        .maybe_single()
-        .execute()
-    )
-    subject = subj_resp.data if subj_resp else None
+    try:
+        subject = _find_subject_by_ref(sb, subject_ref, user_id)
+    except HTTPException:
+        # Schema-not-ready bubbles up as an HTTPException — callers in
+        # chat.py / realtime expect a plain string here, so degrade to empty.
+        return ""
     if not subject:
         return ""
+    canonical_id = subject["id"]
 
     mat_resp = (
         sb.table("subject_materials")
         .select("kind,title,content_text,file_name,file_type")
-        .eq("subject_id", subject_id)
+        .eq("subject_id", canonical_id)
         .eq("user_id", user_id)
         .order("kind")
         .execute()
