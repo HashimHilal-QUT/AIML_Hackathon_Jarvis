@@ -10,6 +10,8 @@ Welcome to the Jarvis project repository! This README is your single source of t
 
 https://smbclouddrive.blob.core.windows.net/sitecontent/JARVIS_Live_demo.mp4
 
+https://smbclouddrive.blob.core.windows.net/sitecontent/jarvis_pitch.html
+
 ---
 
 ## 📁 Project Structure
