@@ -8,9 +8,8 @@ Welcome to the Jarvis project repository! This README is your single source of t
 
 # 🤖 J.A.R.V.I.S Demo
 
-https://smbclouddrive.blob.core.windows.net/sitecontent/JARVIS_Live_demo.mp4
+https://jarvis-qut.netlify.app/
 
-https://smbclouddrive.blob.core.windows.net/sitecontent/jarvis_pitch.html
 
 ---
 
